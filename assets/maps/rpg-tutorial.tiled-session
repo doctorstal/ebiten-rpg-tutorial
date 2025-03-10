@@ -6,13 +6,41 @@
     "activeFile": "tilesets/TilesetFloor.tsx",
     "expandedProjectPaths": [
     ],
+    "file.lastUsedOpenFilter": "Всі файли (*)",
     "fileStates": {
+        "first.tmj": {
+            "scale": 1.2592,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 510.24459974587035,
+                "y": 331.5597204574333
+            }
+        },
+        "first.tmx": {
+            "scale": 0.5741562499999999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 800.3047950797367,
+                "y": 640.0696674467969
+            }
+        },
+        "tilesets/TilesetFloor.tsj": {
+            "dynamicWrapping": false
+        },
         "tilesets/TilesetFloor.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
-            "scaleInEditor": 1
+            "scaleInEditor": 3.3458
+        },
+        "tilesets/TilesetHouse.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 5.3606
+        },
+        "tilesets/buildings.tsj": {
+            "dynamicWrapping": true
         }
     },
-    "last.imagePath": "/Users/oleksiistadnyk/edu/assets/Ninja Adventure - Asset Pack/Backgrounds/Tilesets",
+    "last.imagePath": "/Users/oleksiistadnyk/edu/rpg-tutorial/assets/images/buildings",
     "map.height": 80,
     "map.lastUsedFormat": "json",
     "map.tileHeight": 16,
@@ -23,11 +51,14 @@
     ],
     "project": "rpg-tutorial.tiled-project",
     "recentFiles": [
+        "tilesets/TilesetHouse.tsx",
+        "first.tmx",
         "tilesets/TilesetFloor.tsx"
     ],
-    "tileset.lastUsedFormat": "tsx",
+    "tileset.lastUsedFormat": "json",
     "tileset.tileSize": {
         "height": 16,
         "width": 16
-    }
+    },
+    "tileset.type": 1
 }

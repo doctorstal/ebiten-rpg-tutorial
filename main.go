@@ -19,6 +19,7 @@ type Game struct {
 	enemies     []*entities.Enemy
 	potions     []*entities.Potion
 	tilemapJSON *TilemapJSON
+	tilesets    []Tileset
 	tilemapImg  *ebiten.Image
 	cam         *Camera
 }
@@ -77,18 +78,20 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0x33, 0x66, 0x99, 255})
 
-	for _, layer := range g.tilemapJSON.Layers {
+	for layerIdx, layer := range g.tilemapJSON.Layers {
 		for index, id := range layer.Data {
+			if id == 0 {
+				continue
+			}
 			x := TileWidth * (index % layer.Width)
 			y := TileWidth * (index / layer.Width)
 
-			srcX := TileWidth * ((id - 1) % 22)
-			srcY := TileWidth * ((id - 1) / 22)
+			img := g.tilesets[layerIdx].Img(id)
 			g.cam.Render(
 				screen,
-				g.tilemapImg.SubImage(image.Rect(srcX, srcY, srcX+TileWidth, srcY+TileWidth)).(*ebiten.Image),
+				img,
 				float64(x),
-				float64(y),
+				float64(y-img.Bounds().Dy()+TileWidth),
 			)
 		}
 	}
@@ -161,6 +164,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	tilesets, err := tilemapJSON.GenTilesets()
+
+	fmt.Println(tilesets)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Println("Starting...")
 	game := &Game{
 		player: &entities.Player{
@@ -208,6 +219,7 @@ func main() {
 			},
 		},
 		tilemapJSON: tilemapJSON,
+		tilesets:    tilesets,
 		tilemapImg:  tilemapImg,
 		cam: NewCamera(
 			320,
