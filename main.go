@@ -5,8 +5,8 @@ import (
 	"image"
 	"image/color"
 	"log"
-	"math"
 	"math/rand"
+	"rpg-tutorial/entities"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -14,35 +14,13 @@ import (
 
 const TileWidth = 16
 
-type Sprite struct {
-	Img       *ebiten.Image
-	X, Y      float64
-	Direction int
-	Frame     int
-}
-
-type Player struct {
-	*Sprite
-	Health uint
-}
-
-type Enemy struct {
-	*Sprite
-	FollowsPlayer bool
-}
-
-type Potion struct {
-	*Sprite
-	AmtHeal  uint
-	Consumed bool
-}
-
 type Game struct {
-	player      *Player
-	enemies     []*Enemy
-	potions     []*Potion
+	player      *entities.Player
+	enemies     []*entities.Enemy
+	potions     []*entities.Potion
 	tilemapJSON *TilemapJSON
 	tilemapImg  *ebiten.Image
+	cam         *Camera
 }
 
 func (g *Game) Update() error {
@@ -91,13 +69,14 @@ func (g *Game) Update() error {
 		}
 	}
 
+	g.cam.FollowTarget(g.player.X+TileWidth/2, g.player.Y+TileWidth/2)
+
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0x33, 0x66, 0x99, 255})
 
-	opts := &ebiten.DrawImageOptions{}
 	for _, layer := range g.tilemapJSON.Layers {
 		for index, id := range layer.Data {
 			x := TileWidth * (index % layer.Width)
@@ -105,63 +84,45 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 			srcX := TileWidth * ((id - 1) % 22)
 			srcY := TileWidth * ((id - 1) / 22)
-
-			opts.GeoM.Translate(float64(x), float64(y))
-
-			screen.DrawImage(
+			g.cam.Render(
+				screen,
 				g.tilemapImg.SubImage(image.Rect(srcX, srcY, srcX+TileWidth, srcY+TileWidth)).(*ebiten.Image),
-				opts,
+				float64(x),
+				float64(y),
 			)
-			opts.GeoM.Reset()
 		}
 	}
 
 	// draw player
-	DrawSprite(g.player.Sprite, screen)
+	DrawSprite(g.player.Sprite, screen, g.cam)
 
 	for _, sprite := range g.enemies {
-		DrawSprite(sprite.Sprite, screen)
+		DrawSprite(sprite.Sprite, screen, g.cam)
 	}
 
 	for _, potion := range g.potions {
 		if !potion.Consumed {
-			DrawSprite(potion.Sprite, screen)
+			DrawSprite(potion.Sprite, screen, g.cam)
 		}
 	}
 
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d \n", g.player.Health))
 }
 
-func (s *Sprite) Dist(other *Sprite) float64 {
-	return math.Sqrt(math.Pow(s.X-other.X, 2) + math.Pow(s.Y-other.Y, 2))
-}
-
-func (s *Sprite) Move(d float64) {
-	switch s.Direction {
-	case 0:
-		s.Y += d
-	case 1:
-		s.Y -= d
-	case 2:
-		s.X -= d
-	case 3:
-		s.X += d
-	}
-	s.Frame = (s.Frame + 1) % 256
-}
-
-func DrawSprite(sprite *Sprite, screen *ebiten.Image) {
+func DrawSprite(sprite *entities.Sprite, screen *ebiten.Image, cam *Camera) {
 	opts := &ebiten.DrawImageOptions{}
 	opts.GeoM.Translate(sprite.X, sprite.Y)
 
 	dx := TileWidth * sprite.Direction
 	fy := TileWidth * (sprite.Frame / 4 % 4)
 
-	screen.DrawImage(
+	cam.Render(
+		screen,
 		sprite.Img.SubImage(
 			image.Rect(dx, fy, TileWidth+dx, TileWidth+fy),
 		).(*ebiten.Image),
-		opts,
+		sprite.X,
+		sprite.Y,
 	)
 }
 
@@ -202,17 +163,17 @@ func main() {
 
 	fmt.Println("Starting...")
 	game := &Game{
-		player: &Player{
-			Sprite: &Sprite{
+		player: &entities.Player{
+			Sprite: &entities.Sprite{
 				Img: playerImg,
-				X:   100.0,
-				Y:   100.0,
+				X:   160.0,
+				Y:   120.0,
 			},
 			Health: 3,
 		},
-		enemies: []*Enemy{
+		enemies: []*entities.Enemy{
 			{
-				Sprite: &Sprite{
+				Sprite: &entities.Sprite{
 					Img: skeletonImg,
 					X:   50.0,
 					Y:   50.0,
@@ -220,7 +181,7 @@ func main() {
 				FollowsPlayer: true,
 			},
 			{
-				Sprite: &Sprite{
+				Sprite: &entities.Sprite{
 					Img: skeletonImg,
 					X:   150.0,
 					Y:   150.0,
@@ -228,7 +189,7 @@ func main() {
 				FollowsPlayer: false,
 			},
 			{
-				Sprite: &Sprite{
+				Sprite: &entities.Sprite{
 					Img: skeletonImg,
 					X:   75.0,
 					Y:   75.0,
@@ -236,9 +197,9 @@ func main() {
 				FollowsPlayer: true,
 			},
 		},
-		potions: []*Potion{
+		potions: []*entities.Potion{
 			{
-				Sprite: &Sprite{
+				Sprite: &entities.Sprite{
 					Img: potionImg,
 					X:   210.0,
 					Y:   100.0,
@@ -248,6 +209,12 @@ func main() {
 		},
 		tilemapJSON: tilemapJSON,
 		tilemapImg:  tilemapImg,
+		cam: NewCamera(
+			320,
+			240,
+			float64(tilemapJSON.Layers[0].Width*TileWidth),
+			float64(tilemapJSON.Layers[0].Height*TileWidth),
+		),
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
