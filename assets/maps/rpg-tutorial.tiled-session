@@ -3,20 +3,27 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "tilesets/TilesetFloor.tsx",
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "tilesets/TilesetFloor.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
     },
     "last.imagePath": "/Users/oleksiistadnyk/edu/assets/Ninja Adventure - Asset Pack/Backgrounds/Tilesets",
     "map.height": 80,
+    "map.lastUsedFormat": "json",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "map.width": 100,
     "openFiles": [
+        "tilesets/TilesetFloor.tsx"
     ],
     "project": "rpg-tutorial.tiled-project",
     "recentFiles": [
+        "tilesets/TilesetFloor.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
