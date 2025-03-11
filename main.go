@@ -10,6 +10,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 const TileWidth = 16
@@ -21,50 +22,77 @@ type Game struct {
 	tilemapJSON *TilemapJSON
 	tilesets    []Tileset
 	tilemapImg  *ebiten.Image
-	cam         *Camera
+
+	cam       *Camera
+	colliders []image.Rectangle
 }
 
 func (g *Game) Update() error {
 	// react to key presses
 
-	playerMoves := true
+	g.player.Dx = 0
+	g.player.Dy = 0
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		g.player.Direction = 3
-	} else if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		g.player.Direction = 2
-	} else if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		g.player.Direction = 1
-	} else if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		g.player.Direction = 0
-	} else {
-		playerMoves = false
+		g.player.Dx = 2
 	}
-	if playerMoves {
-		g.player.Move(2)
+	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+		g.player.Direction = 2
+		g.player.Dx = -2
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
+		g.player.Direction = 1
+		g.player.Dy = -2
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
+		g.player.Direction = 0
+		g.player.Dy = 2
+	}
+
+	g.player.CheckCollision(g.colliders)
+
+	if g.player.Dx != 0 || g.player.Dy != 0 {
+		g.player.Move()
 	}
 
 	for _, enemy := range g.enemies {
+		enemy.Dx = 0
+		enemy.Dy = 0
 		if enemy.FollowsPlayer && enemy.Dist(g.player.Sprite) < 5*TileWidth {
 			if enemy.X < g.player.X {
 				enemy.Direction = 3
-			} else if enemy.X > g.player.X {
+				enemy.Dx = 1
+			}
+			if enemy.X > g.player.X {
 				enemy.Direction = 2
-			} else if enemy.Y > g.player.Y {
+				enemy.Dx = -1
+			}
+			if enemy.Y > g.player.Y {
 				enemy.Direction = 1
-			} else if enemy.Y < g.player.Y {
+				enemy.Dy = -1
+			}
+			if enemy.Y < g.player.Y {
 				enemy.Direction = 0
+				enemy.Dy = 1
 			}
 
 		} else {
 			if rand.Float64() > 0.95 {
 				enemy.Direction = rand.Intn(4)
 			}
+			enemy.Forward(1)
 		}
-		enemy.Move(1)
+
+		enemy.CheckCollision(g.colliders)
+		enemy.Move()
+
+		if enemy.Rect().Overlaps(g.player.Rect()) {
+			g.player.Health -= 1
+		}
 	}
 
 	for _, potion := range g.potions {
-		if !potion.Consumed && g.player.X > potion.X {
+		if !potion.Consumed && g.player.Rect().Overlaps(potion.Rect()) {
 			g.player.Health += potion.AmtHeal
 			potion.Consumed = true
 		}
@@ -109,6 +137,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 	}
 
+	for _, collider := range g.colliders {
+		vector.StrokeRect(screen,
+			float32(collider.Min.X)+float32(g.cam.X),
+			float32(collider.Min.Y)+float32(g.cam.Y),
+			float32(collider.Dx()),
+			float32(collider.Dy()),
+			1.0,
+			color.RGBA{255, 0, 0, 255},
+			false,
+		)
+	}
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d \n", g.player.Health))
 }
 
@@ -176,34 +215,42 @@ func main() {
 	game := &Game{
 		player: &entities.Player{
 			Sprite: &entities.Sprite{
-				Img: playerImg,
-				X:   160.0,
-				Y:   120.0,
+				Img:    playerImg,
+				X:      160.0,
+				Y:      120.0,
+				Width:  TileWidth,
+				Height: TileWidth,
 			},
 			Health: 3,
 		},
 		enemies: []*entities.Enemy{
 			{
 				Sprite: &entities.Sprite{
-					Img: skeletonImg,
-					X:   50.0,
-					Y:   50.0,
+					Img:    skeletonImg,
+					X:      50.0,
+					Y:      50.0,
+					Width:  TileWidth,
+					Height: TileWidth,
 				},
 				FollowsPlayer: true,
 			},
 			{
 				Sprite: &entities.Sprite{
-					Img: skeletonImg,
-					X:   150.0,
-					Y:   150.0,
+					Img:    skeletonImg,
+					X:      150.0,
+					Y:      150.0,
+					Width:  TileWidth,
+					Height: TileWidth,
 				},
 				FollowsPlayer: false,
 			},
 			{
 				Sprite: &entities.Sprite{
-					Img: skeletonImg,
-					X:   75.0,
-					Y:   75.0,
+					Img:    skeletonImg,
+					X:      75.0,
+					Y:      75.0,
+					Width:  TileWidth,
+					Height: TileWidth,
 				},
 				FollowsPlayer: true,
 			},
@@ -211,9 +258,11 @@ func main() {
 		potions: []*entities.Potion{
 			{
 				Sprite: &entities.Sprite{
-					Img: potionImg,
-					X:   210.0,
-					Y:   100.0,
+					Img:    potionImg,
+					X:      210.0,
+					Y:      100.0,
+					Width:  8.0,
+					Height: 10.0,
 				},
 				AmtHeal: 1,
 			},
@@ -227,6 +276,9 @@ func main() {
 			float64(tilemapJSON.Layers[0].Width*TileWidth),
 			float64(tilemapJSON.Layers[0].Height*TileWidth),
 		),
+		colliders: []image.Rectangle{
+			image.Rect(100, 100, 116, 116),
+		},
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
