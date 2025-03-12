@@ -6,7 +6,9 @@ import (
 	"image/color"
 	"log"
 	"math/rand"
+	"rpg-tutorial/animations"
 	"rpg-tutorial/entities"
+	"rpg-tutorial/spritesheet"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -16,18 +18,20 @@ import (
 const TileWidth = 16
 
 type Game struct {
-	player      *entities.Player
-	enemies     []*entities.Enemy
-	potions     []*entities.Potion
-	tilemapJSON *TilemapJSON
-	tilesets    []Tileset
-	tilemapImg  *ebiten.Image
-
-	cam       *Camera
-	colliders []image.Rectangle
+	player            *entities.Player
+	playerSpriteSheet *spritesheet.SpriteSheet
+	animationFrame    int
+	enemies           []*entities.Enemy
+	potions           []*entities.Potion
+	tilemapJSON       *TilemapJSON
+	tilesets          []Tileset
+	tilemapImg        *ebiten.Image
+	cam               *Camera
+	colliders         []image.Rectangle
 }
 
 func (g *Game) Update() error {
+	g.animationFrame++
 	// react to key presses
 
 	g.player.Dx = 0
@@ -53,6 +57,10 @@ func (g *Game) Update() error {
 
 	if g.player.Dx != 0 || g.player.Dy != 0 {
 		g.player.Move()
+	}
+	activeAnim := g.player.ActiveAnimation()
+	if activeAnim != nil {
+		activeAnim.Update()
 	}
 
 	for _, enemy := range g.enemies {
@@ -85,6 +93,10 @@ func (g *Game) Update() error {
 
 		enemy.CheckCollision(g.colliders)
 		enemy.Move()
+		activeAnim := enemy.ActiveAnimation()
+		if activeAnim != nil {
+			activeAnim.Update()
+		}
 
 		if enemy.Rect().Overlaps(g.player.Rect()) {
 			g.player.Health -= 1
@@ -155,13 +167,24 @@ func DrawSprite(sprite *entities.Sprite, screen *ebiten.Image, cam *Camera) {
 	opts := &ebiten.DrawImageOptions{}
 	opts.GeoM.Translate(sprite.X, sprite.Y)
 
-	dx := TileWidth * sprite.Direction
-	fy := TileWidth * (sprite.Frame / 4 % 4)
+	// // dx := TileWidth * sprite.Direction
+	// fy := TileWidth * (sprite.Frame / 4 % 4)
 
+	activeAnim := sprite.ActiveAnimation()
+	frame := 0
+	if activeAnim != nil {
+		frame = activeAnim.Frame()
+	}
+	var rect image.Rectangle
+	if sprite.Spritesheet != nil {
+		rect = sprite.Spritesheet.Rect(frame)
+	} else {
+		rect = image.Rect(0, 0, TileWidth, TileWidth)
+	}
 	cam.Render(
 		screen,
 		sprite.Img.SubImage(
-			image.Rect(dx, fy, TileWidth+dx, TileWidth+fy),
+			rect,
 		).(*ebiten.Image),
 		sprite.X,
 		sprite.Y,
@@ -210,47 +233,62 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	playerSpriteSheet := spritesheet.NewSpriteSheet(4, 7, 16)
+	personAnimations := map[entities.SpriteState]*animations.Animation{
+		entities.Down:  animations.NewAnimation(0, 12, 4, 10.0, 0),
+		entities.Up:    animations.NewAnimation(1, 13, 4, 10.0, 0),
+		entities.Left:  animations.NewAnimation(2, 14, 4, 10.0, 0),
+		entities.Right: animations.NewAnimation(3, 15, 4, 10.0, 0),
+	}
 
 	fmt.Println("Starting...")
 	game := &Game{
 		player: &entities.Player{
 			Sprite: &entities.Sprite{
-				Img:    playerImg,
-				X:      160.0,
-				Y:      120.0,
-				Width:  TileWidth,
-				Height: TileWidth,
+				Img:         playerImg,
+				X:           160.0,
+				Y:           120.0,
+				Width:       TileWidth,
+				Height:      TileWidth,
+				Spritesheet: playerSpriteSheet,
+				Animations:  personAnimations,
 			},
 			Health: 3,
 		},
 		enemies: []*entities.Enemy{
 			{
 				Sprite: &entities.Sprite{
-					Img:    skeletonImg,
-					X:      50.0,
-					Y:      50.0,
-					Width:  TileWidth,
-					Height: TileWidth,
+					Img:         skeletonImg,
+					X:           50.0,
+					Y:           50.0,
+					Width:       TileWidth,
+					Height:      TileWidth,
+					Spritesheet: playerSpriteSheet,
+					Animations:  personAnimations,
 				},
 				FollowsPlayer: true,
 			},
 			{
 				Sprite: &entities.Sprite{
-					Img:    skeletonImg,
-					X:      150.0,
-					Y:      150.0,
-					Width:  TileWidth,
-					Height: TileWidth,
+					Img:         skeletonImg,
+					X:           150.0,
+					Y:           150.0,
+					Width:       TileWidth,
+					Height:      TileWidth,
+					Spritesheet: playerSpriteSheet,
+					Animations:  personAnimations,
 				},
 				FollowsPlayer: false,
 			},
 			{
 				Sprite: &entities.Sprite{
-					Img:    skeletonImg,
-					X:      75.0,
-					Y:      75.0,
-					Width:  TileWidth,
-					Height: TileWidth,
+					Img:         skeletonImg,
+					X:           75.0,
+					Y:           75.0,
+					Width:       TileWidth,
+					Height:      TileWidth,
+					Spritesheet: playerSpriteSheet,
+					Animations:  personAnimations,
 				},
 				FollowsPlayer: true,
 			},

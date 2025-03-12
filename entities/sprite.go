@@ -3,8 +3,19 @@ package entities
 import (
 	"image"
 	"math"
+	"rpg-tutorial/animations"
+	"rpg-tutorial/spritesheet"
 
 	"github.com/hajimehoshi/ebiten/v2"
+)
+
+type SpriteState uint8
+
+const (
+	Down SpriteState = iota
+	Up
+	Left
+	Right
 )
 
 type Sprite struct {
@@ -12,6 +23,8 @@ type Sprite struct {
 	X, Y, Width, Height float64
 	Direction           int
 	Frame               int
+	Animations          map[SpriteState]*animations.Animation
+	Spritesheet         *spritesheet.SpriteSheet
 	Dx, Dy              float64
 }
 
@@ -50,4 +63,20 @@ func (s *Sprite) CheckCollision(colliders []image.Rectangle) {
 			s.Dy = 0
 		}
 	}
+}
+
+func (p *Sprite) ActiveAnimation() *animations.Animation {
+	if p.Dy > 0 {
+		return p.Animations[Down]
+	}
+	if p.Dy < 0 {
+		return p.Animations[Up]
+	}
+	if p.Dx > 0 {
+		return p.Animations[Right]
+	}
+	if p.Dx < 0 {
+		return p.Animations[Left]
+	}
+	return nil
 }
