@@ -6,6 +6,7 @@ import (
 	"image"
 	"os"
 	"path"
+	"rpg-tutorial/constants"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -27,15 +28,15 @@ type UniformTileset struct {
 
 func (u *UniformTileset) Img(id int) *ebiten.Image {
 	id -= u.gid
-	srcX := TileWidth * (id % 22)
-	srcY := TileWidth * (id / 22)
+	srcX := constants.TileSize * (id % 22)
+	srcY := constants.TileSize * (id / 22)
 
 	return u.img.SubImage(
 		image.Rect(
 			srcX,
 			srcY,
-			srcX+TileWidth,
-			srcY+TileWidth,
+			srcX+constants.TileSize,
+			srcY+constants.TileSize,
 		),
 	).(*ebiten.Image)
 }

@@ -23,13 +23,13 @@ func (a *Animation) Frame() int {
 	return a.frame
 }
 
-func NewAnimation(first, last, step int, speed float32, frame int) *Animation {
+func NewAnimation(first, last, step int, speed float32) *Animation {
 	return &Animation{
 		first,
 		last,
 		step,
 		speed,
 		speed,
-		frame,
+		first,
 	}
 }

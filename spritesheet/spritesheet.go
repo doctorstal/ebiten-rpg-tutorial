@@ -5,13 +5,13 @@ import "image"
 type SpriteSheet struct {
 	WidthInTiles  int
 	HeightInTiles int
-	Tilesize      int
+	TileSize      int
 }
 
 func (s *SpriteSheet) Rect(index int) image.Rectangle {
-	x := index % s.WidthInTiles * s.Tilesize
-	y := index / s.WidthInTiles * s.Tilesize
-	return image.Rect(x, y, x+s.Tilesize, y+s.Tilesize)
+	x := index % s.WidthInTiles * s.TileSize
+	y := index / s.WidthInTiles * s.TileSize
+	return image.Rect(x, y, x+s.TileSize, y+s.TileSize)
 }
 func NewSpriteSheet(w, h, t int) *SpriteSheet {
 	return &SpriteSheet{

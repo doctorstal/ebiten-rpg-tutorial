@@ -22,7 +22,6 @@ type Sprite struct {
 	Img                 *ebiten.Image
 	X, Y, Width, Height float64
 	Direction           int
-	Frame               int
 	Animations          map[SpriteState]*animations.Animation
 	Spritesheet         *spritesheet.SpriteSheet
 	Dx, Dy              float64
@@ -35,7 +34,6 @@ func (s *Sprite) Dist(other *Sprite) float64 {
 func (s *Sprite) Move() {
 	s.X += s.Dx
 	s.Y += s.Dy
-	s.Frame = (s.Frame + 1) % 256
 }
 func (s *Sprite) Forward(d float64) {
 	switch s.Direction {
