@@ -28,7 +28,7 @@ type Sprite struct {
 }
 
 func (s *Sprite) Dist(other *Sprite) float64 {
-	return math.Sqrt(math.Pow(s.X-other.X, 2) + math.Pow(s.Y-other.Y, 2))
+	return math.Sqrt(math.Pow(s.X+s.Width/2-other.X-other.Width/2, 2) + math.Pow(s.Y+s.Height/2-other.Y-other.Height/2, 2))
 }
 
 func (s *Sprite) Move() {

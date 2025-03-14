@@ -7,12 +7,14 @@ import (
 	"log"
 	"math/rand"
 	"rpg-tutorial/animations"
+	"rpg-tutorial/components"
 	"rpg-tutorial/constants"
 	"rpg-tutorial/entities"
 	"rpg-tutorial/spritesheet"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -58,12 +60,26 @@ func NewGame() *Game {
 
 	tilesets, err := tilemapJSON.GenTilesets()
 
-	fmt.Println(tilesets)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 	playerSpriteSheet := spritesheet.NewSpriteSheet(4, 7, 16)
+
+	newEnemy := func(x, y float64, fp bool) *entities.Enemy {
+		return &entities.Enemy{
+			Sprite: &entities.Sprite{
+				Img:         skeletonImg,
+				X:           x,
+				Y:           y,
+				Width:       constants.TileSize,
+				Height:      constants.TileSize,
+				Spritesheet: playerSpriteSheet,
+				Animations:  personAnimations(),
+			},
+			CombatComponent: components.NewEnemyCombat(3, 1, 30),
+			FollowsPlayer:   fp,
+		}
+	}
 
 	game := &Game{
 		player: &entities.Player{
@@ -76,45 +92,13 @@ func NewGame() *Game {
 				Spritesheet: playerSpriteSheet,
 				Animations:  personAnimations(),
 			},
-			Health: 3,
+			CombatComponent: components.NewBasicCombat(5, 1),
+			Health:          3,
 		},
 		enemies: []*entities.Enemy{
-			{
-				Sprite: &entities.Sprite{
-					Img:         skeletonImg,
-					X:           50.0,
-					Y:           50.0,
-					Width:       constants.TileSize,
-					Height:      constants.TileSize,
-					Spritesheet: playerSpriteSheet,
-					Animations:  personAnimations(),
-				},
-				FollowsPlayer: true,
-			},
-			{
-				Sprite: &entities.Sprite{
-					Img:         skeletonImg,
-					X:           150.0,
-					Y:           150.0,
-					Width:       constants.TileSize,
-					Height:      constants.TileSize,
-					Spritesheet: playerSpriteSheet,
-					Animations:  personAnimations(),
-				},
-				FollowsPlayer: false,
-			},
-			{
-				Sprite: &entities.Sprite{
-					Img:         skeletonImg,
-					X:           75.0,
-					Y:           75.0,
-					Width:       constants.TileSize,
-					Height:      constants.TileSize,
-					Spritesheet: playerSpriteSheet,
-					Animations:  personAnimations(),
-				},
-				FollowsPlayer: true,
-			},
+			newEnemy(50.0, 50.0, true),
+			newEnemy(75.0, 75.0, true),
+			newEnemy(150.0, 75.0, true),
 		},
 		potions: []*entities.Potion{
 			{
@@ -221,9 +205,6 @@ func (g *Game) Update() error {
 			activeAnim.Update()
 		}
 
-		if enemy.Rect().Overlaps(g.player.Rect()) {
-			g.player.Health -= 1
-		}
 	}
 
 	for _, potion := range g.potions {
@@ -231,6 +212,39 @@ func (g *Game) Update() error {
 			g.player.Health += potion.AmtHeal
 			potion.Consumed = true
 		}
+	}
+
+	g.player.CombatComponent.Update()
+
+	clicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0)
+	cX, cY := ebiten.CursorPosition()
+	cP := image.Point{cX - int(g.cam.X), cY - int(g.cam.Y)}
+
+	deadEnemies := make(map[int]struct{})
+	for idx, enemy := range g.enemies {
+		enemy.CombatComponent.Update()
+		if clicked && cP.In(enemy.Rect()) && enemy.Dist(g.player.Sprite) < 5*constants.TileSize {
+			enemy.CombatComponent.Damage(g.player.CombatComponent.AttackPower())
+			if enemy.CombatComponent.Health() <= 0 {
+				deadEnemies[idx] = struct{}{}
+			}
+		}
+		if enemy.Rect().Overlaps(g.player.Rect()) {
+			if enemy.CombatComponent.Attack() {
+				g.player.CombatComponent.Damage(enemy.CombatComponent.AttackPower())
+			}
+		}
+	}
+
+	if len(deadEnemies) > 0 {
+		n := 0
+		for idx, e := range g.enemies {
+			if _, exists := deadEnemies[idx]; !exists {
+				g.enemies[n] = e
+				n++
+			}
+		}
+		g.enemies = g.enemies[:n]
 	}
 
 	g.cam.FollowTarget(g.player.X+constants.TileSize/2, g.player.Y+constants.TileSize/2)
@@ -283,7 +297,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			false,
 		)
 	}
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d \n", g.player.Health))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d \n", g.player.CombatComponent.Health()))
 }
 
 func drawSprite(sprite *entities.Sprite, screen *ebiten.Image, cam *Camera) {
