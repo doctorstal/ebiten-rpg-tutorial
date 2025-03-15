@@ -11,6 +11,7 @@ import (
 	"rpg-tutorial/constants"
 	"rpg-tutorial/entities"
 	"rpg-tutorial/spritesheet"
+	"rpg-tutorial/tiled"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -24,8 +25,8 @@ type Game struct {
 	animationFrame    int
 	enemies           []*entities.Enemy
 	potions           []*entities.Potion
-	tilemapJSON       *TilemapJSON
-	tilesets          []Tileset
+	tilemapJSON       *tiled.TilemapJSON
+	tilesets          []tiled.Tileset
 	tilemapImg        *ebiten.Image
 	cam               *Camera
 	colliders         []image.Rectangle
@@ -53,7 +54,7 @@ func NewGame() *Game {
 		log.Fatal(err)
 	}
 
-	tilemapJSON, err := NewTilemapJSON("assets/maps/first.tmj")
+	tilemapJSON, err := tiled.NewTilemapJSON("assets/maps/first.tmj")
 	if err != nil {
 		log.Fatal(err)
 	}
