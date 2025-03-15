@@ -34,6 +34,13 @@ func (s *Sprite) Dist(other *Sprite) float64 {
 func (s *Sprite) Move() {
 	s.X += s.Dx
 	s.Y += s.Dy
+	if s.X < 0 {
+		s.X = 0
+	}
+	if s.Y < 0 {
+		s.Y = 0
+	}
+	// TODO Add upper bounds
 }
 func (s *Sprite) Forward(d float64) {
 	switch s.Direction {
