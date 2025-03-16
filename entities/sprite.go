@@ -12,10 +12,15 @@ import (
 type SpriteState uint8
 
 const (
-	Down SpriteState = iota
+	Idle SpriteState = iota
+	Down
 	Up
 	Left
 	Right
+	AttackDown
+	AttackUp
+	AttackLeft
+	AttackRight
 )
 
 type Sprite struct {
@@ -25,6 +30,11 @@ type Sprite struct {
 	Animations          map[SpriteState]*animations.Animation
 	Spritesheet         *spritesheet.SpriteSheet
 	Dx, Dy              float64
+	state               SpriteState
+}
+
+type Animator interface {
+	ActiveAnimation() animations.Animation
 }
 
 func (s *Sprite) Dist(other *Sprite) float64 {
@@ -70,18 +80,29 @@ func (s *Sprite) CheckCollision(colliders []image.Rectangle) {
 	}
 }
 
-func (p *Sprite) ActiveAnimation() *animations.Animation {
-	if p.Dy > 0 {
-		return p.Animations[Down]
+func (s *Sprite) UpdateAnimation() {
+	s.state = Idle
+	if s.Dy > 0 {
+		s.state = Down
 	}
-	if p.Dy < 0 {
-		return p.Animations[Up]
+	if s.Dy < 0 {
+		s.state = Up
 	}
-	if p.Dx > 0 {
-		return p.Animations[Right]
+	if s.Dx > 0 {
+		s.state = Right
 	}
-	if p.Dx < 0 {
-		return p.Animations[Left]
+	if s.Dx < 0 {
+		s.state = Left
+	}
+	animation := s.ActiveAnimation()
+	if animation != nil {
+		animation.Update()
+	}
+}
+
+func (s *Sprite) ActiveAnimation() *animations.Animation {
+	if anim, ok := s.Animations[s.state]; ok {
+		return anim
 	}
 	return nil
 }

@@ -23,7 +23,6 @@ import (
 type GameScene struct {
 	player            *entities.Player
 	playerSpriteSheet *spritesheet.SpriteSheet
-	animationFrame    int
 	enemies           []*entities.Enemy
 	potions           []*entities.Potion
 	tilemapJSON       *tiled.TilemapJSON
@@ -148,32 +147,36 @@ func (g *GameScene) FirstLoad() {
 
 	newEnemy := func(x, y float64, fp bool) *entities.Enemy {
 		return &entities.Enemy{
+			Character: &entities.Character{
+				Sprite: &entities.Sprite{
+					Img:         skeletonImg,
+					X:           x,
+					Y:           y,
+					Width:       constants.TileSize,
+					Height:      constants.TileSize,
+					Spritesheet: playerSpriteSheet,
+					Animations:  personAnimations(),
+				},
+				CombatComponent: components.NewEnemyCombat(3, 1, 30),
+			},
+			FollowsPlayer: fp,
+		}
+	}
+
+	g.player = &entities.Player{
+		Character: &entities.Character{
 			Sprite: &entities.Sprite{
-				Img:         skeletonImg,
-				X:           x,
-				Y:           y,
+				Img:         playerImg,
+				X:           160.0,
+				Y:           120.0,
 				Width:       constants.TileSize,
 				Height:      constants.TileSize,
 				Spritesheet: playerSpriteSheet,
 				Animations:  personAnimations(),
 			},
-			CombatComponent: components.NewEnemyCombat(3, 1, 30),
-			FollowsPlayer:   fp,
-		}
-	}
-
-	g.player = &entities.Player{
-		Sprite: &entities.Sprite{
-			Img:         playerImg,
-			X:           160.0,
-			Y:           120.0,
-			Width:       constants.TileSize,
-			Height:      constants.TileSize,
-			Spritesheet: playerSpriteSheet,
-			Animations:  personAnimations(),
+			CombatComponent: components.NewPlayerCombat(5, 1, 10),
 		},
-		CombatComponent: components.NewBasicCombat(5, 1),
-		Health:          3,
+		Health: 3,
 	}
 	g.enemies = []*entities.Enemy{
 		newEnemy(50.0, 50.0, true),
@@ -210,10 +213,14 @@ func (g *GameScene) FirstLoad() {
 
 func personAnimations() map[entities.SpriteState]*animations.Animation {
 	return map[entities.SpriteState]*animations.Animation{
-		entities.Down:  animations.NewAnimation(0, 12, 4, 10.0),
-		entities.Up:    animations.NewAnimation(1, 13, 4, 10.0),
-		entities.Left:  animations.NewAnimation(2, 14, 4, 10.0),
-		entities.Right: animations.NewAnimation(3, 15, 4, 10.0),
+		entities.Down:        animations.NewAnimation(0, 12, 4, 10.0),
+		entities.Up:          animations.NewAnimation(1, 13, 4, 10.0),
+		entities.Left:        animations.NewAnimation(2, 14, 4, 10.0),
+		entities.Right:       animations.NewAnimation(3, 15, 4, 10.0),
+		entities.AttackDown:  animations.NewAnimation(0, 16, 16, 10.0),
+		entities.AttackUp:    animations.NewAnimation(1, 17, 16, 10.0),
+		entities.AttackLeft:  animations.NewAnimation(2, 18, 16, 10.0),
+		entities.AttackRight: animations.NewAnimation(3, 19, 16, 10.0),
 	}
 }
 
@@ -230,7 +237,6 @@ func (g *GameScene) Update() SceneId {
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		return ExitSceneId
 	}
-	g.animationFrame++
 	// react to key presses
 
 	g.player.Dx = 0
@@ -257,10 +263,7 @@ func (g *GameScene) Update() SceneId {
 	if g.player.Dx != 0 || g.player.Dy != 0 {
 		g.player.Move()
 	}
-	activeAnim := g.player.ActiveAnimation()
-	if activeAnim != nil {
-		activeAnim.Update()
-	}
+
 
 	for _, enemy := range g.enemies {
 		enemy.Dx = 0
@@ -292,16 +295,11 @@ func (g *GameScene) Update() SceneId {
 
 		enemy.CheckCollision(g.colliders)
 		enemy.Move()
-		activeAnim := enemy.ActiveAnimation()
-		if activeAnim != nil {
-			activeAnim.Update()
-		}
-
 	}
 
 	for _, potion := range g.potions {
 		if !potion.Consumed && g.player.Rect().Overlaps(potion.Rect()) {
-			g.player.Health += potion.AmtHeal
+			g.player.CombatComponent.Heal(potion.AmtHeal)
 			potion.Consumed = true
 		}
 	}
@@ -309,6 +307,9 @@ func (g *GameScene) Update() SceneId {
 	g.player.CombatComponent.Update()
 
 	clicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0)
+	if clicked {
+		g.player.CombatComponent.Attack()
+	}
 	cX, cY := ebiten.CursorPosition()
 	cP := image.Point{cX - int(g.cam.X), cY - int(g.cam.Y)}
 
@@ -326,6 +327,7 @@ func (g *GameScene) Update() SceneId {
 				g.player.CombatComponent.Damage(enemy.CombatComponent.AttackPower())
 			}
 		}
+		enemy.UpdateAnimation()
 	}
 
 	if len(deadEnemies) > 0 {
@@ -339,6 +341,8 @@ func (g *GameScene) Update() SceneId {
 		g.enemies = g.enemies[:n]
 	}
 
+		g.player.UpdateAnimation()
+
 	g.cam.FollowTarget(g.player.X+constants.TileSize/2, g.player.Y+constants.TileSize/2)
 
 	return GameSceneId
@@ -348,7 +352,6 @@ func NewGameScene() Scene {
 	return &GameScene{
 		player:            nil,
 		playerSpriteSheet: nil,
-		animationFrame:    0,
 		enemies:           make([]*entities.Enemy, 0),
 		potions:           make([]*entities.Potion, 0),
 		tilemapJSON:       nil,

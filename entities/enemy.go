@@ -1,9 +1,6 @@
 package entities
 
-import "rpg-tutorial/components"
-
 type Enemy struct {
-	*Sprite
+	*Character
 	FollowsPlayer   bool
-	CombatComponent components.Combat
 }

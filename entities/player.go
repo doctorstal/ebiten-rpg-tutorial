@@ -1,9 +1,7 @@
 package entities
 
-import "rpg-tutorial/components"
 
 type Player struct {
-	*Sprite
+	*Character
 	Health          uint
-	CombatComponent components.Combat
 }
