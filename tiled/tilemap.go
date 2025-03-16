@@ -6,11 +6,21 @@ import (
 	"path"
 )
 
+type TiledObjectJSON struct {
+	Gid     int     `json:"gid"`
+	X       float64 `json:"x"`
+	Y       float64 `json:"y"`
+	Width   int     `json:"width"`
+	Height  int     `json:"height"`
+	Visible bool    `json:"visible"`
+}
+
 type TilemapLayerJSON struct {
-	Data   []int  `json:"data"`
-	Width  int    `json:"width"`
-	Height int    `json:"height"`
-	Name   string `jaon:"name"`
+	Objects []TiledObjectJSON `json:"objects"`
+	Data    []int             `json:"data"`
+	Width   int               `json:"width"`
+	Height  int               `json:"height"`
+	Name    string            `jaon:"name"`
 }
 type TilemapJSON struct {
 	Layers   []*TilemapLayerJSON `json:"layers"`
@@ -27,7 +37,6 @@ func (t *TilemapJSON) GenTilesets() ([]Tileset, error) {
 			return nil, err
 		}
 		tilesets = append(tilesets, tileset)
-
 	}
 
 	return tilesets, nil

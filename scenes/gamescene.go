@@ -17,7 +17,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type GameScene struct {
@@ -57,6 +56,15 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 				float64(y-img.Bounds().Dy()+constants.TileSize),
 			)
 		}
+		for _, obj := range layer.Objects {
+			img := g.tilesets[1].Img(obj.Gid)
+			g.cam.Render(
+				screen,
+				img,
+				obj.X,
+				obj.Y,
+			)
+		}
 	}
 
 	// draw player
@@ -72,17 +80,6 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	for _, collider := range g.colliders {
-		vector.StrokeRect(screen,
-			float32(collider.Min.X)+float32(g.cam.X),
-			float32(collider.Min.Y)+float32(g.cam.Y),
-			float32(collider.Dx()),
-			float32(collider.Dy()),
-			1.0,
-			color.RGBA{255, 0, 0, 255},
-			false,
-		)
-	}
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d \n", g.player.CombatComponent.Health()))
 }
 
@@ -204,9 +201,23 @@ func (g *GameScene) FirstLoad() {
 		float64(tilemapJSON.Layers[0].Width*constants.TileSize),
 		float64(tilemapJSON.Layers[0].Height*constants.TileSize),
 	)
-	g.colliders = []image.Rectangle{
-		image.Rect(100, 100, 116, 116),
+
+	colliders := make([]image.Rectangle, 0)
+	for _, layer := range tilemapJSON.Layers {
+		for _, obj := range layer.Objects {
+
+			x := int(obj.X)
+			y := int(obj.Y)
+			colliders = append(colliders, image.Rect(
+				x,
+				y,
+				x+obj.Width,
+				y+obj.Height,
+			))
+		}
+
 	}
+	g.colliders = colliders
 	g.isLoaded = true
 
 }
@@ -263,7 +274,6 @@ func (g *GameScene) Update() SceneId {
 	if g.player.Dx != 0 || g.player.Dy != 0 {
 		g.player.Move()
 	}
-
 
 	for _, enemy := range g.enemies {
 		enemy.Dx = 0
@@ -341,7 +351,7 @@ func (g *GameScene) Update() SceneId {
 		g.enemies = g.enemies[:n]
 	}
 
-		g.player.UpdateAnimation()
+	g.player.UpdateAnimation()
 
 	g.cam.FollowTarget(g.player.X+constants.TileSize/2, g.player.Y+constants.TileSize/2)
 
