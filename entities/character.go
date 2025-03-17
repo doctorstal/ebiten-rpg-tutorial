@@ -30,17 +30,17 @@ func NewCharacter(img *ebiten.Image, x, y float64, combat components.Combat) *Ch
 
 }
 
-func personAnimations() map[SpriteState]*animations.Animation {
-	return map[SpriteState]*animations.Animation{
-		Down:        animations.NewAnimation(0, 12, 4, 10.0),
-		Up:          animations.NewAnimation(1, 13, 4, 10.0),
-		Left:        animations.NewAnimation(2, 14, 4, 10.0),
-		Right:       animations.NewAnimation(3, 15, 4, 10.0),
-		AttackDown:  animations.NewAnimation(0, 16, 16, 10.0),
-		AttackUp:    animations.NewAnimation(1, 17, 16, 10.0),
-		AttackLeft:  animations.NewAnimation(2, 18, 16, 10.0),
-		AttackRight: animations.NewAnimation(3, 19, 16, 10.0),
-		Dead:        animations.NewAnimation(24, 27, 1, 10.0),
+func personAnimations() map[SpriteState]animations.Animation {
+	return map[SpriteState]animations.Animation{
+		Down:        animations.NewLoopAnimation(0, 12, 4, 10.0),
+		Up:          animations.NewLoopAnimation(1, 13, 4, 10.0),
+		Left:        animations.NewLoopAnimation(2, 14, 4, 10.0),
+		Right:       animations.NewLoopAnimation(3, 15, 4, 10.0),
+		AttackDown:  animations.NewLoopAnimation(0, 16, 16, 10.0),
+		AttackUp:    animations.NewLoopAnimation(1, 17, 16, 10.0),
+		AttackLeft:  animations.NewLoopAnimation(2, 18, 16, 10.0),
+		AttackRight: animations.NewLoopAnimation(3, 19, 16, 10.0),
+		Dead:        animations.NewOneTimeAnimation(0, 24, 24, 40.0),
 	}
 }
 
@@ -54,9 +54,9 @@ func (c *Character) Die() {
 	c.state = Dead
 }
 
-func (c *Character) UpdateAnimation() {
+func (c *Character) UpdateState() {
 	if !c.CombatComponent.Attacking() {
-		c.Sprite.UpdateAnimation()
+		c.Sprite.UpdateState()
 		return
 	}
 	c.state = AttackDown
@@ -71,9 +71,5 @@ func (c *Character) UpdateAnimation() {
 	}
 	if c.Dx < 0 {
 		c.state = AttackLeft
-	}
-	animation := c.ActiveAnimation()
-	if animation != nil {
-		animation.Update()
 	}
 }

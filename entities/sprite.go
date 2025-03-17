@@ -28,7 +28,7 @@ type Sprite struct {
 	Img                 *ebiten.Image
 	X, Y, Width, Height float64
 	Direction           int
-	Animations          map[SpriteState]*animations.Animation
+	Animations          map[SpriteState]animations.Animation
 	Spritesheet         *spritesheet.SpriteSheet
 	Dx, Dy              float64
 	state               SpriteState
@@ -81,7 +81,7 @@ func (s *Sprite) CheckCollision(colliders []image.Rectangle) {
 	}
 }
 
-func (s *Sprite) UpdateAnimation() {
+func (s *Sprite) UpdateState() {
 	s.state = Idle
 	if s.Dy > 0 {
 		s.state = Down
@@ -95,13 +95,16 @@ func (s *Sprite) UpdateAnimation() {
 	if s.Dx < 0 {
 		s.state = Left
 	}
+}
+
+func (s *Sprite) UpdateAnimation() {
 	animation := s.ActiveAnimation()
 	if animation != nil {
 		animation.Update()
 	}
 }
 
-func (s *Sprite) ActiveAnimation() *animations.Animation {
+func (s *Sprite) ActiveAnimation() animations.Animation {
 	if anim, ok := s.Animations[s.state]; ok {
 		return anim
 	}

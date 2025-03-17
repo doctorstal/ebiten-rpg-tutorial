@@ -22,7 +22,7 @@ type GameScene struct {
 	player            *entities.Player
 	playerSpriteSheet *spritesheet.SpriteSheet
 	enemies           []*entities.Enemy
-	deadEnemies       []*entities.Enemy
+	staticSprites     []*entities.Sprite
 	potions           []*entities.Potion
 	tilemapJSON       *tiled.TilemapJSON
 	tilesets          []tiled.Tileset
@@ -66,14 +66,15 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		}
 	}
 
+	for _, sprite := range g.staticSprites {
+		drawSprite(sprite, screen, g.cam)
+	}
+
 	for _, bomb := range g.player.Bombs {
 		drawSprite(bomb.Sprite, screen, g.cam)
 	}
 
 	for _, sprite := range g.enemies {
-		drawSprite(sprite.Sprite, screen, g.cam)
-	}
-	for _, sprite := range g.deadEnemies {
 		drawSprite(sprite.Sprite, screen, g.cam)
 	}
 
@@ -236,6 +237,7 @@ func (g *GameScene) Update() SceneId {
 		g.player.Dy = 2
 	}
 
+	g.player.UpdateState()
 	g.player.UpdateAnimation()
 	g.player.CheckCollision(g.colliders)
 	g.player.Move()
@@ -269,8 +271,13 @@ func (g *GameScene) Update() SceneId {
 		}
 
 		enemy.UpdateAnimation()
+		enemy.UpdateState()
 		enemy.CheckCollision(g.colliders)
 		enemy.Move()
+	}
+
+	for _, sprite := range g.staticSprites {
+		sprite.UpdateAnimation()
 	}
 
 	for _, potion := range g.potions {
@@ -282,10 +289,14 @@ func (g *GameScene) Update() SceneId {
 
 	g.player.CombatComponent.Update()
 
+	for _, bomb := range g.player.Bombs {
+		bomb.UpdateAnimation()
+	}
+
 	playerAttacks := inpututil.IsKeyJustPressed(ebiten.KeySpace) && g.player.CombatComponent.Attack()
 	// playerAttacks := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) && g.player.CombatComponent.Attack()
 	if playerAttacks {
-		g.player.UpdateAnimation()
+		g.player.UpdateState()
 		g.player.Bombs = append(g.player.Bombs, entities.NewBomb(g.player.BombImg, g.player.X, g.player.Y, g.player.CombatComponent.AttackPower()))
 	}
 	// cX, cY := ebiten.CursorPosition()
@@ -300,11 +311,14 @@ func (g *GameScene) Update() SceneId {
 			if enemy.Rect().Overlaps(bomb.Rect()) {
 				enemy.CombatComponent.Damage(bomb.AmtDamage)
 				firedBombs[bidx] = struct{}{}
+				bomb.Explode()
+				g.staticSprites = append(g.staticSprites, bomb.Sprite)
+				// g.colliders = append(g.colliders, bomb.Rect())
 				if enemy.CombatComponent.Health() <= 0 {
 					enemy.Die()
 					deadEnemies[idx] = enemy
-					g.deadEnemies = append(g.deadEnemies, enemy)
-					g.colliders = append(g.colliders, enemy.Rect())
+					g.staticSprites = append(g.staticSprites, enemy.Sprite)
+					// g.colliders = append(g.colliders, enemy.Rect())
 				}
 			}
 		}
@@ -320,7 +334,7 @@ func (g *GameScene) Update() SceneId {
 		}
 		if enemy.Rect().Overlaps(g.player.Rect()) {
 			if enemy.CombatComponent.Attack() {
-				enemy.UpdateAnimation()
+				enemy.UpdateState()
 				g.player.CombatComponent.Damage(enemy.CombatComponent.AttackPower())
 			}
 		}
@@ -347,7 +361,7 @@ func NewGameScene() Scene {
 		player:            nil,
 		playerSpriteSheet: nil,
 		enemies:           make([]*entities.Enemy, 0),
-		deadEnemies:       make([]*entities.Enemy, 0),
+		staticSprites:     make([]*entities.Sprite, 0),
 		potions:           make([]*entities.Potion, 0),
 		tilemapJSON:       nil,
 		tilesets:          make([]tiled.Tileset, 0),
