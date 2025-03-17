@@ -7,7 +7,6 @@ import (
 	"os"
 	"path"
 	"rpg-tutorial/constants"
-	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -17,8 +16,16 @@ type Tileset interface {
 	Img(id int) *ebiten.Image
 }
 
-type UniformTilesetJSON struct {
-	Path string `json:"image"`
+type TilesetJSON struct {
+	Path  string     `json:"image"`
+	Tiles []TileJSON `json:"tiles"`
+}
+
+type TileJSON struct {
+	Id     int    `json:"id"`
+	Path   string `json:"image"`
+	Width  int    `json:"imagewidth"`
+	Height int    `json:"imageheight"`
 }
 
 type UniformTileset struct {
@@ -41,17 +48,6 @@ func (u *UniformTileset) Img(id int) *ebiten.Image {
 	).(*ebiten.Image)
 }
 
-type TileJSON struct {
-	Id     int    `json:"id"`
-	Path   string `json:"image"`
-	Width  int    `json:"imagewidth"`
-	Height int    `json:"imageheight"`
-}
-
-type DynamicTilesetJSON struct {
-	Tiles []TileJSON `json:"tiles"`
-}
-
 type DynamicTileset struct {
 	imgs []*ebiten.Image
 	gid  int
@@ -68,20 +64,20 @@ func NewTileset(tilesetPath string, gid int) (Tileset, error) {
 	if err != nil {
 		return nil, err
 	}
+	var tilesetJSON TilesetJSON
+	err = json.Unmarshal(contents, &tilesetJSON)
+	if err != nil {
+		return nil, err
+	}
 
-	if strings.Contains(tilesetPath, "buildings") {
+	if len(tilesetJSON.Tiles) > 0 {
 		// return DynamicTileset
-		var dynTilesetJSON DynamicTilesetJSON
-		err = json.Unmarshal(contents, &dynTilesetJSON)
-		if err != nil {
-			return nil, err
-		}
 
 		dynTileset := DynamicTileset{}
 		dynTileset.gid = gid
 		dynTileset.imgs = make([]*ebiten.Image, 0)
 
-		for _, tile := range dynTilesetJSON.Tiles {
+		for _, tile := range tilesetJSON.Tiles {
 			imgPath := path.Join("assets", "maps", "tilesets", tile.Path)
 			img, _, err := ebitenutil.NewImageFromFile(imgPath)
 			if err != nil {
@@ -92,13 +88,7 @@ func NewTileset(tilesetPath string, gid int) (Tileset, error) {
 		}
 		return &dynTileset, nil
 	} else {
-		// return UniformTileset
-		var uniformTilesetJSON UniformTilesetJSON
-		err := json.Unmarshal(contents, &uniformTilesetJSON)
-		if err != nil {
-			return nil, err
-		}
-		imgPath := path.Join("assets", "maps", "tilesets", uniformTilesetJSON.Path)
+		imgPath := path.Join("assets", "maps", "tilesets", tilesetJSON.Path)
 		img, _, err := ebitenutil.NewImageFromFile(imgPath)
 		if err != nil {
 

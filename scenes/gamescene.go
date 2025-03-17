@@ -6,7 +6,6 @@ import (
 	"image/color"
 	"log"
 	"math/rand"
-	"rpg-tutorial/animations"
 	"rpg-tutorial/camera"
 	"rpg-tutorial/components"
 	"rpg-tutorial/constants"
@@ -23,10 +22,10 @@ type GameScene struct {
 	player            *entities.Player
 	playerSpriteSheet *spritesheet.SpriteSheet
 	enemies           []*entities.Enemy
+	deadEnemies       []*entities.Enemy
 	potions           []*entities.Potion
 	tilemapJSON       *tiled.TilemapJSON
 	tilesets          []tiled.Tileset
-	tilemapImg        *ebiten.Image
 	cam               *camera.Camera
 	colliders         []image.Rectangle
 	isLoaded          bool
@@ -67,10 +66,14 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	// draw player
-	drawSprite(g.player.Sprite, screen, g.cam)
+	for _, bomb := range g.player.Bombs {
+		drawSprite(bomb.Sprite, screen, g.cam)
+	}
 
 	for _, sprite := range g.enemies {
+		drawSprite(sprite.Sprite, screen, g.cam)
+	}
+	for _, sprite := range g.deadEnemies {
 		drawSprite(sprite.Sprite, screen, g.cam)
 	}
 
@@ -79,6 +82,9 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 			drawSprite(potion.Sprite, screen, g.cam)
 		}
 	}
+
+	// draw player
+	drawSprite(g.player.Sprite, screen, g.cam)
 
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d \n", g.player.CombatComponent.Health()))
 }
@@ -120,12 +126,12 @@ func (g *GameScene) FirstLoad() {
 		log.Fatal(err)
 	}
 
-	potionImg, _, err := ebitenutil.NewImageFromFile("assets/images/LifePot.png")
+	bombImg, _, err := ebitenutil.NewImageFromFile("assets/images/bomb.png")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	tilemapImg, _, err := ebitenutil.NewImageFromFile("assets/images/TilesetFloor.png")
+	potionImg, _, err := ebitenutil.NewImageFromFile("assets/images/LifePot.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -140,44 +146,18 @@ func (g *GameScene) FirstLoad() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	playerSpriteSheet := spritesheet.NewSpriteSheet(4, 7, 16)
 
 	newEnemy := func(x, y float64, fp bool) *entities.Enemy {
 		return &entities.Enemy{
-			Character: &entities.Character{
-				Sprite: &entities.Sprite{
-					Img:         skeletonImg,
-					X:           x,
-					Y:           y,
-					Width:       constants.TileSize,
-					Height:      constants.TileSize,
-					Spritesheet: playerSpriteSheet,
-					Animations:  personAnimations(),
-				},
-				CombatComponent: components.NewEnemyCombat(3, 1, 30),
-			},
+			Character:     entities.NewCharacter(skeletonImg, x, y, components.NewEnemyCombat(3, 1, 30)),
 			FollowsPlayer: fp,
 		}
 	}
 
-	g.player = &entities.Player{
-		Character: &entities.Character{
-			Sprite: &entities.Sprite{
-				Img:         playerImg,
-				X:           160.0,
-				Y:           120.0,
-				Width:       constants.TileSize,
-				Height:      constants.TileSize,
-				Spritesheet: playerSpriteSheet,
-				Animations:  personAnimations(),
-			},
-			CombatComponent: components.NewPlayerCombat(5, 1, 10),
-		},
-		Health: 3,
-	}
+	g.player = entities.NewPlayer(playerImg, bombImg, 160.0, 100.0)
 	g.enemies = []*entities.Enemy{
 		newEnemy(50.0, 50.0, true),
-		newEnemy(75.0, 75.0, true),
+		newEnemy(75.0, 75.0, false),
 		newEnemy(150.0, 75.0, true),
 	}
 	g.potions = []*entities.Potion{
@@ -194,7 +174,6 @@ func (g *GameScene) FirstLoad() {
 	}
 	g.tilemapJSON = tilemapJSON
 	g.tilesets = tilesets
-	g.tilemapImg = tilemapImg
 	g.cam = camera.NewCamera(
 		320,
 		240,
@@ -217,22 +196,10 @@ func (g *GameScene) FirstLoad() {
 		}
 
 	}
+
 	g.colliders = colliders
 	g.isLoaded = true
 
-}
-
-func personAnimations() map[entities.SpriteState]*animations.Animation {
-	return map[entities.SpriteState]*animations.Animation{
-		entities.Down:        animations.NewAnimation(0, 12, 4, 10.0),
-		entities.Up:          animations.NewAnimation(1, 13, 4, 10.0),
-		entities.Left:        animations.NewAnimation(2, 14, 4, 10.0),
-		entities.Right:       animations.NewAnimation(3, 15, 4, 10.0),
-		entities.AttackDown:  animations.NewAnimation(0, 16, 16, 10.0),
-		entities.AttackUp:    animations.NewAnimation(1, 17, 16, 10.0),
-		entities.AttackLeft:  animations.NewAnimation(2, 18, 16, 10.0),
-		entities.AttackRight: animations.NewAnimation(3, 19, 16, 10.0),
-	}
 }
 
 func (g *GameScene) OnEnter() {
@@ -269,11 +236,9 @@ func (g *GameScene) Update() SceneId {
 		g.player.Dy = 2
 	}
 
+	g.player.UpdateAnimation()
 	g.player.CheckCollision(g.colliders)
-
-	if g.player.Dx != 0 || g.player.Dy != 0 {
-		g.player.Move()
-	}
+	g.player.Move()
 
 	for _, enemy := range g.enemies {
 		enemy.Dx = 0
@@ -303,6 +268,7 @@ func (g *GameScene) Update() SceneId {
 			enemy.Forward(1)
 		}
 
+		enemy.UpdateAnimation()
 		enemy.CheckCollision(g.colliders)
 		enemy.Move()
 	}
@@ -316,28 +282,48 @@ func (g *GameScene) Update() SceneId {
 
 	g.player.CombatComponent.Update()
 
-	clicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0)
-	if clicked {
-		g.player.CombatComponent.Attack()
+	playerAttacks := inpututil.IsKeyJustPressed(ebiten.KeySpace) && g.player.CombatComponent.Attack()
+	// playerAttacks := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) && g.player.CombatComponent.Attack()
+	if playerAttacks {
+		g.player.UpdateAnimation()
+		g.player.Bombs = append(g.player.Bombs, entities.NewBomb(g.player.BombImg, g.player.X, g.player.Y, g.player.CombatComponent.AttackPower()))
 	}
-	cX, cY := ebiten.CursorPosition()
-	cP := image.Point{cX - int(g.cam.X), cY - int(g.cam.Y)}
+	// cX, cY := ebiten.CursorPosition()
+	// cP := image.Point{cX - int(g.cam.X), cY - int(g.cam.Y)}
 
-	deadEnemies := make(map[int]struct{})
+	deadEnemies := make(map[int]*entities.Enemy)
 	for idx, enemy := range g.enemies {
 		enemy.CombatComponent.Update()
-		if clicked && cP.In(enemy.Rect()) && enemy.Dist(g.player.Sprite) < 5*constants.TileSize {
-			enemy.CombatComponent.Damage(g.player.CombatComponent.AttackPower())
-			if enemy.CombatComponent.Health() <= 0 {
-				deadEnemies[idx] = struct{}{}
+		firedBombs := make(map[int]struct{})
+		// if playerAttacks && cP.In(enemy.Rect()) && enemy.Dist(g.player.Sprite) < 5*constants.TileSize {
+		for bidx, bomb := range g.player.Bombs {
+			if enemy.Rect().Overlaps(bomb.Rect()) {
+				enemy.CombatComponent.Damage(bomb.AmtDamage)
+				firedBombs[bidx] = struct{}{}
+				if enemy.CombatComponent.Health() <= 0 {
+					enemy.Die()
+					deadEnemies[idx] = enemy
+					g.deadEnemies = append(g.deadEnemies, enemy)
+					g.colliders = append(g.colliders, enemy.Rect())
+				}
 			}
+		}
+		if len(firedBombs) > 0 {
+			n := 0
+			for idx, b := range g.player.Bombs {
+				if _, fired := firedBombs[idx]; !fired {
+					g.player.Bombs[n] = b
+					n++
+				}
+			}
+			g.player.Bombs = g.player.Bombs[:n]
 		}
 		if enemy.Rect().Overlaps(g.player.Rect()) {
 			if enemy.CombatComponent.Attack() {
+				enemy.UpdateAnimation()
 				g.player.CombatComponent.Damage(enemy.CombatComponent.AttackPower())
 			}
 		}
-		enemy.UpdateAnimation()
 	}
 
 	if len(deadEnemies) > 0 {
@@ -351,8 +337,6 @@ func (g *GameScene) Update() SceneId {
 		g.enemies = g.enemies[:n]
 	}
 
-	g.player.UpdateAnimation()
-
 	g.cam.FollowTarget(g.player.X+constants.TileSize/2, g.player.Y+constants.TileSize/2)
 
 	return GameSceneId
@@ -363,10 +347,10 @@ func NewGameScene() Scene {
 		player:            nil,
 		playerSpriteSheet: nil,
 		enemies:           make([]*entities.Enemy, 0),
+		deadEnemies:       make([]*entities.Enemy, 0),
 		potions:           make([]*entities.Potion, 0),
 		tilemapJSON:       nil,
 		tilesets:          make([]tiled.Tileset, 0),
-		tilemapImg:        nil,
 		cam:               nil,
 		colliders:         make([]image.Rectangle, 0),
 	}

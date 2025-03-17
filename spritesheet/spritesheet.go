@@ -13,6 +13,8 @@ func (s *SpriteSheet) Rect(index int) image.Rectangle {
 	y := index / s.WidthInTiles * s.TileSize
 	return image.Rect(x, y, x+s.TileSize, y+s.TileSize)
 }
+
+// Creates new sprite sheet, takes width and height in tiles and tile size
 func NewSpriteSheet(w, h, t int) *SpriteSheet {
 	return &SpriteSheet{
 		w,

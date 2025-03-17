@@ -21,6 +21,7 @@ const (
 	AttackUp
 	AttackLeft
 	AttackRight
+	Dead
 )
 
 type Sprite struct {
