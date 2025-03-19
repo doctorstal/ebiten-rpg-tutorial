@@ -38,6 +38,9 @@ func (s *PauseScene) OnExit() {
 
 // Update implements Scene.
 func (s *PauseScene) Update() SceneId {
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		return ExitSceneId
+	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 		return GameSceneId
 	}

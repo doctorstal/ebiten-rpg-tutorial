@@ -2,5 +2,9 @@ package entities
 
 type Enemy struct {
 	*Character
-	FollowsPlayer   bool
+	FollowsPlayer bool
+}
+
+func (e *Enemy) IsDead() bool {
+	return e.state == Dead
 }

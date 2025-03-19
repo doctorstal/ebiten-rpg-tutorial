@@ -21,6 +21,8 @@ func NewGame() *Game {
 			scenes.StartSceneId: startScene,
 			scenes.GameSceneId:  gameScene,
 			scenes.PauseSceneId: scenes.NewPauseScene(),
+			scenes.WonSceneId:   scenes.NewEndScene(true),
+			scenes.LostSceneId:  scenes.NewEndScene(false),
 		},
 		activeSceneId: scenes.StartSceneId,
 	}

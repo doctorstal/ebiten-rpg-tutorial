@@ -87,7 +87,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	// draw player
 	drawSprite(g.player.Sprite, screen, g.cam)
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d \n", g.player.CombatComponent.Health()))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d, Enemies Left: %d \n", g.player.CombatComponent.Health(), len(g.enemies)))
 }
 
 func drawSprite(sprite *entities.Sprite, screen *ebiten.Image, cam *camera.Camera) {
@@ -155,10 +155,19 @@ func (g *GameScene) FirstLoad() {
 		}
 	}
 
-	g.player = entities.NewPlayer(playerImg, bombImg, 160.0, 100.0)
+	g.player = entities.NewPlayer(playerImg, bombImg, 360.0, 100.0)
 	g.enemies = []*entities.Enemy{
 		newEnemy(50.0, 50.0, true),
 		newEnemy(75.0, 75.0, false),
+		newEnemy(150.0, 75.0, true),
+		newEnemy(150.0, 75.0, true),
+		newEnemy(150.0, 75.0, true),
+		newEnemy(150.0, 75.0, true),
+		newEnemy(150.0, 75.0, true),
+		newEnemy(150.0, 75.0, true),
+		newEnemy(150.0, 75.0, true),
+		newEnemy(150.0, 75.0, true),
+		newEnemy(150.0, 75.0, true),
 		newEnemy(150.0, 75.0, true),
 	}
 	g.potions = []*entities.Potion{
@@ -203,6 +212,12 @@ func (g *GameScene) FirstLoad() {
 
 }
 
+func (g *GameScene) Unload() {
+	// TODO do proper unload
+	g.staticSprites = g.staticSprites[:0]
+	g.isLoaded = false
+}
+
 func (g *GameScene) OnEnter() {
 }
 
@@ -220,19 +235,19 @@ func (g *GameScene) Update() SceneId {
 
 	g.player.Dx = 0
 	g.player.Dy = 0
-	if ebiten.IsKeyPressed(ebiten.KeyD) {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		g.player.Direction = 3
 		g.player.Dx = 2
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyA) {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		g.player.Direction = 2
 		g.player.Dx = -2
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyW) {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
 		g.player.Direction = 1
 		g.player.Dy = -2
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyS) {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
 		g.player.Direction = 0
 		g.player.Dy = 2
 	}
@@ -332,7 +347,7 @@ func (g *GameScene) Update() SceneId {
 			}
 			g.player.Bombs = g.player.Bombs[:n]
 		}
-		if enemy.Rect().Overlaps(g.player.Rect()) {
+		if !enemy.IsDead() && enemy.Rect().Overlaps(g.player.Rect()) {
 			if enemy.CombatComponent.Attack() {
 				enemy.UpdateState()
 				g.player.CombatComponent.Damage(enemy.CombatComponent.AttackPower())
@@ -352,6 +367,15 @@ func (g *GameScene) Update() SceneId {
 	}
 
 	g.cam.FollowTarget(g.player.X+constants.TileSize/2, g.player.Y+constants.TileSize/2)
+
+	if g.player.CombatComponent.Health() <= 0 {
+		g.Unload()
+		return LostSceneId
+	}
+	if len(g.enemies) == 0 {
+		g.Unload()
+		return WonSceneId
+	}
 
 	return GameSceneId
 }
