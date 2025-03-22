@@ -1,6 +1,7 @@
 package main
 
 import (
+	"rpg-tutorial/constants"
 	"rpg-tutorial/scenes"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -13,6 +14,7 @@ type Game struct {
 
 func NewGame() *Game {
 	startScene := scenes.NewStartScene()
+	// startScene := scenes.NewTiledScene()
 	startScene.FirstLoad()
 	startScene.OnEnter()
 	gameScene := scenes.NewGameScene()
@@ -20,9 +22,9 @@ func NewGame() *Game {
 		sceneMap: map[scenes.SceneId]scenes.Scene{
 			scenes.StartSceneId: startScene,
 			scenes.GameSceneId:  gameScene,
-			scenes.PauseSceneId: scenes.NewPauseScene(),
-			scenes.WonSceneId:   scenes.NewEndScene(true),
-			scenes.LostSceneId:  scenes.NewEndScene(false),
+			scenes.PauseSceneId: scenes.NewPauseScene(gameScene),
+			scenes.WonSceneId:   scenes.NewEndScene(gameScene, true),
+			scenes.LostSceneId:  scenes.NewEndScene(gameScene, false),
 		},
 		activeSceneId: scenes.StartSceneId,
 	}
@@ -56,5 +58,5 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+	return constants.ScreenWidth, constants.ScreenHeight
 }

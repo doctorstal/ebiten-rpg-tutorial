@@ -1,21 +1,20 @@
 package scenes
 
 import (
-	"image/color"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type PauseScene struct {
-	isLoaded bool
+	isLoaded     bool
+	overlayScene *SceneOvelay
 }
 
 // Draw implements Scene.
 func (s *PauseScene) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{33, 88, 99, 255})
-	ebitenutil.DebugPrint(screen, "Press <Enter> to unpause.")
+	s.overlayScene.Draw(screen)
+	ebitenutil.DebugPrintAt(screen, "Press <Enter> to unpause.", 0, 20)
 }
 
 // FirstLoad implements Scene.
@@ -47,6 +46,8 @@ func (s *PauseScene) Update() SceneId {
 	return PauseSceneId
 }
 
-func NewPauseScene() Scene {
-	return &PauseScene{}
+func NewPauseScene(gameScene Scene) Scene {
+	return &PauseScene{
+		overlayScene: NewSceneOverlay(gameScene),
+	}
 }

@@ -1,20 +1,19 @@
 package scenes
 
 import (
-	"image/color"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type EndScene struct {
-	victory bool
+	victory      bool
+	sceneOverlay *SceneOvelay
 }
 
 // Draw implements Scene.
 func (e *EndScene) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{33, 88, 99, 255})
+	e.sceneOverlay.Draw(screen)
 	var msg = "Press <Enter> to start over."
 	if e.victory {
 		msg = "You won!\n" + msg
@@ -22,7 +21,7 @@ func (e *EndScene) Draw(screen *ebiten.Image) {
 		msg = "You lost!\n" + msg
 	}
 
-	ebitenutil.DebugPrint(screen, msg)
+	ebitenutil.DebugPrintAt(screen, msg, 0, 20)
 
 }
 
@@ -55,8 +54,9 @@ func (e *EndScene) Update() SceneId {
 	}
 }
 
-func NewEndScene(victory bool) Scene {
+func NewEndScene(gameScene Scene, victory bool) Scene {
 	return &EndScene{
-		victory: victory,
+		victory:      victory,
+		sceneOverlay: NewSceneOverlay(gameScene),
 	}
 }

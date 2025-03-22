@@ -34,15 +34,18 @@ type Sprite struct {
 	state               SpriteState
 }
 
-type Animator interface {
-	ActiveAnimation() animations.Animation
-}
-
 func (s *Sprite) Dist(other *Sprite) float64 {
 	return math.Sqrt(math.Pow(s.X+s.Width/2-other.X-other.Width/2, 2) + math.Pow(s.Y+s.Height/2-other.Y-other.Height/2, 2))
 }
 
+func (s *Sprite) NormalizeSpeed() {
+	if s.Dx != 0 && s.Dy != 0 {
+		s.Dx /= math.Sqrt2
+		s.Dy /= math.Sqrt2
+	}
+}
 func (s *Sprite) Move() {
+	s.NormalizeSpeed()
 	s.X += s.Dx
 	s.Y += s.Dy
 	if s.X < 0 {

@@ -13,6 +13,10 @@ type Player struct {
 	Health  uint
 }
 
+func (p *Player) NewBomb() *Bomb {
+	return NewBomb(p.BombImg, p.X, p.Y, p.CombatComponent.AttackPower())
+}
+
 func NewPlayer(playerImg, bombImg *ebiten.Image, x, y float64) *Player {
 	return &Player{
 		Character: NewCharacter(playerImg, x, y, components.NewPlayerCombat(5, 1, 10)),
