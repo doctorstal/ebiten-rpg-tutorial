@@ -307,19 +307,19 @@ func (g *GameScene) Update() SceneId {
 		enemy.Dx = 0
 		enemy.Dy = 0
 		if enemy.FollowsPlayer && enemy.Dist(g.player.Sprite) < 5*constants.TileSize {
-			if enemy.X - g.player.X < -1  {
+			if enemy.X-g.player.X < -1 {
 				enemy.Direction = 3
 				enemy.Dx = 1
 			}
-			if enemy.X - g.player.X > 1 {
+			if enemy.X-g.player.X > 1 {
 				enemy.Direction = 2
 				enemy.Dx = -1
 			}
-			if enemy.Y - g.player.Y > 1 {
+			if enemy.Y-g.player.Y > 1 {
 				enemy.Direction = 1
 				enemy.Dy = -1
 			}
-			if enemy.Y - g.player.Y < -1 {
+			if enemy.Y-g.player.Y < -1 {
 				enemy.Direction = 0
 				enemy.Dy = 1
 			}
@@ -328,7 +328,7 @@ func (g *GameScene) Update() SceneId {
 			if rand.Float64() > 0.95 {
 				enemy.Direction = rand.Intn(4)
 			}
-			enemy.Forward(1)
+			enemy.Forward(0.5)
 		}
 
 		enemy.UpdateAnimation()
