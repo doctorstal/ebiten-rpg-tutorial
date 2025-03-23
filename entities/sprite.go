@@ -74,11 +74,20 @@ func (s *Sprite) Rect() image.Rectangle {
 }
 
 func (s *Sprite) CheckCollision(colliders []image.Rectangle) {
+	// moveX := s.X + s.Width/2 + s.Dx + math.Copysign(s.Width/2, s.Dx)
+	// moveY := s.Y + s.Height/2 + s.Dy + math.Copysign(s.Height/2, s.Dy)
+	xRect := image.Rect(int(s.X+s.Width/2), int(s.Y), int(s.X+s.Width/2+1), int(s.Y+s.Height)).Add(image.Point{int(s.Dx + math.Copysign(s.Width/2, s.Dx)), 0})
+	yRect := image.Rect(int(s.X), int(s.Y+s.Height/2), int(s.X+s.Width), int(s.Y+s.Height/2+1)).Add(image.Point{0, int(s.Dy + math.Copysign(s.Height/2, s.Dy))})
+
 	for _, collider := range colliders {
-		if collider.Overlaps(s.Rect().Add(image.Point{int(s.Dx), 0})) {
+		// if (image.Point{int(moveX), int(moveY)}).In(collider) {
+		// 	s.Dx = 0
+		// 	s.Dy = 0
+		// }
+		if collider.Overlaps(xRect) {
 			s.Dx = 0
 		}
-		if collider.Overlaps(s.Rect().Add(image.Point{0, int(s.Dy)})) {
+		if collider.Overlaps(yRect) {
 			s.Dy = 0
 		}
 	}

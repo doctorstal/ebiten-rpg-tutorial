@@ -54,36 +54,37 @@ func NewBasicCombat(health int, attackPower uint) Combat {
 	}
 }
 
-
 type PlayerCombat struct {
 	*BasicCombat
 	attackCooldown  int
+	attackImmobile  int
 	timeSinceAttack int
 }
 
-func NewPlayerCombat(health int, attackPower uint, attackCooldown int) Combat {
+func NewPlayerCombat(health int, attackPower uint, attackCooldown int, attackImmobile int) Combat {
 	return &PlayerCombat{
 		BasicCombat:     NewBasicCombat(health, attackPower).(*BasicCombat),
 		attackCooldown:  attackCooldown,
-		timeSinceAttack: 0,
+		attackImmobile:  attackImmobile,
+		timeSinceAttack: 1000,
 	}
 }
 
-func (e *PlayerCombat) Attack() bool {
-	if e.timeSinceAttack >= e.attackCooldown {
-		e.attacking = true
-		e.timeSinceAttack = 0
+func (p *PlayerCombat) Attack() bool {
+	if p.timeSinceAttack >= p.attackCooldown {
+		p.attacking = true
+		p.timeSinceAttack = 0
 		return true
 	}
 	return false
 }
 
-func (e *PlayerCombat) Update() {
-	if e.timeSinceAttack < 1000 {
-		e.timeSinceAttack++
+func (p *PlayerCombat) Update() {
+	if p.timeSinceAttack < 1000 {
+		p.timeSinceAttack++
 	}
-	if e.timeSinceAttack >= e.attackCooldown {
-		e.attacking = false
+	if p.timeSinceAttack >= p.attackImmobile {
+		p.attacking = false
 	}
 }
 

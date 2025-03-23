@@ -19,7 +19,7 @@ func (p *Player) NewBomb() *Bomb {
 
 func NewPlayer(playerImg, bombImg *ebiten.Image, x, y float64) *Player {
 	return &Player{
-		Character: NewCharacter(playerImg, x, y, components.NewPlayerCombat(5, 1, 10)),
+		Character: NewCharacter(playerImg, x, y, components.NewPlayerCombat(5, 1, 30, 10)),
 		BombImg:   bombImg,
 		Bombs:     make([]*Bomb, 0),
 		Health:    3,

@@ -327,8 +327,9 @@ func (g *GameScene) Update() SceneId {
 		} else {
 			if rand.Float64() > 0.95 {
 				enemy.Direction = rand.Intn(4)
+				enemy.WonderingSpeed = 0.1 + 0.5 * rand.Float64()
 			}
-			enemy.Forward(0.5)
+			enemy.Forward(enemy.WonderingSpeed)
 		}
 
 		enemy.UpdateAnimation()
@@ -374,12 +375,12 @@ func (g *GameScene) Update() SceneId {
 				firedBombs[bidx] = struct{}{}
 				bomb.Explode()
 				g.staticSprites = append(g.staticSprites, bomb.Sprite)
-				// g.colliders = append(g.colliders, bomb.Rect())
+				g.colliders = append(g.colliders, bomb.Rect())
 				if enemy.CombatComponent.Health() <= 0 {
 					enemy.Die()
 					deadEnemies[idx] = enemy
 					g.staticSprites = append(g.staticSprites, enemy.Sprite)
-					// g.colliders = append(g.colliders, enemy.Rect())
+					g.colliders = append(g.colliders, enemy.Rect())
 				}
 			}
 		}

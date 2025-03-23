@@ -23,14 +23,6 @@ func NewTiledMap(path string) (*TiledMap, error) {
 		return nil, err
 	}
 
-	for _, l := range gameMap.Layers {
-		for _, t := range l.Tiles {
-			if t.HorizontalFlip {
-				fmt.Println("Horizontal Flip ", t.ID)
-			}
-		}
-	}
-
 	renderer, err := render.NewRenderer(gameMap)
 	if err != nil {
 		fmt.Printf("map unsupported for rendering: %s", err.Error())

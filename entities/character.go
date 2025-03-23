@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"image"
 	"rpg-tutorial/animations"
 	"rpg-tutorial/components"
 	"rpg-tutorial/constants"
@@ -42,6 +43,11 @@ func personAnimations() map[SpriteState]animations.Animation {
 		AttackRight: animations.NewLoopAnimation(3, 19, 16, 10.0),
 		Dead:        animations.NewOneTimeAnimation(0, 24, 24, 10.0),
 	}
+}
+
+func (s *Character) Rect() image.Rectangle{
+	return image.Rect(int(s.X), int(s.Y), int(s.X+s.Width), int(s.Y+s.Height))
+
 }
 
 func (c *Character) Move() {
