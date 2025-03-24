@@ -3,6 +3,7 @@ package main
 import (
 	"rpg-tutorial/constants"
 	"rpg-tutorial/scenes"
+	"rpg-tutorial/state"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -13,11 +14,16 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	startScene := scenes.NewStartScene()
+	gameState := &state.GlobalGameState{
+		SelectedHero: state.Samurai,
+	}
+
+	startScene := scenes.NewStartScene(gameState)
 	// startScene := scenes.NewTiledScene()
 	startScene.FirstLoad()
 	startScene.OnEnter()
-	gameScene := scenes.NewGameScene()
+
+	gameScene := scenes.NewGameScene(gameState)
 	game := &Game{
 		sceneMap: map[scenes.SceneId]scenes.Scene{
 			scenes.StartSceneId: startScene,
@@ -31,6 +37,7 @@ func NewGame() *Game {
 
 	return game
 }
+
 
 func (g *Game) Update() error {
 	nextSceneId := g.sceneMap[g.activeSceneId].Update()

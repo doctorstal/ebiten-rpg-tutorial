@@ -9,6 +9,7 @@ import (
 	"rpg-tutorial/components"
 	"rpg-tutorial/constants"
 	"rpg-tutorial/entities"
+	"rpg-tutorial/state"
 	"rpg-tutorial/tiled"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -18,6 +19,7 @@ import (
 )
 
 type GameScene struct {
+	gameState     *state.GlobalGameState
 	player        *entities.Player
 	shadowImg     *ebiten.Image
 	enemies       []*entities.Enemy
@@ -120,8 +122,6 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 }
 
 func drawSprite(sprite *entities.Sprite, screen *ebiten.Image, cam *camera.Camera) {
-	opts := &ebiten.DrawImageOptions{}
-	opts.GeoM.Translate(sprite.X, sprite.Y)
 
 	activeAnim := sprite.ActiveAnimation()
 	frame := 0
@@ -146,7 +146,19 @@ func drawSprite(sprite *entities.Sprite, screen *ebiten.Image, cam *camera.Camer
 
 func (g *GameScene) FirstLoad() {
 
-	playerImg, _, err := ebitenutil.NewImageFromFile("assets/images/robot.png")
+	var playerImgPath = "assets/images/samurai.png"
+
+	switch g.gameState.SelectedHero {
+	case state.Robot:
+		playerImgPath = "assets/images/robot.png"
+	case state.Samurai:
+		playerImgPath = "assets/images/samurai.png"
+	case state.Skeleton:
+		playerImgPath = "assets/images/skeleton.png"
+	default:
+		panic(fmt.Sprintf("unexpected state.Hero: %#v", g.gameState.SelectedHero))
+	}
+	playerImg, _, err := ebitenutil.NewImageFromFile(playerImgPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -327,7 +339,7 @@ func (g *GameScene) Update() SceneId {
 		} else {
 			if rand.Float64() > 0.95 {
 				enemy.Direction = rand.Intn(4)
-				enemy.WonderingSpeed = 0.1 + 0.5 * rand.Float64()
+				enemy.WonderingSpeed = 0.1 + 0.5*rand.Float64()
 			}
 			enemy.Forward(enemy.WonderingSpeed)
 		}
@@ -375,7 +387,7 @@ func (g *GameScene) Update() SceneId {
 				firedBombs[bidx] = struct{}{}
 				bomb.Explode()
 				g.staticSprites = append(g.staticSprites, bomb.Sprite)
-				g.colliders = append(g.colliders, bomb.Rect())
+				// g.colliders = append(g.colliders, bomb.Rect())
 				if enemy.CombatComponent.Health() <= 0 {
 					enemy.Die()
 					deadEnemies[idx] = enemy
@@ -427,8 +439,9 @@ func (g *GameScene) Update() SceneId {
 	return GameSceneId
 }
 
-func NewGameScene() Scene {
+func NewGameScene(gameState *state.GlobalGameState) Scene {
 	return &GameScene{
+		gameState:     gameState,
 		player:        nil,
 		enemies:       make([]*entities.Enemy, 0),
 		staticSprites: make([]*entities.Sprite, 0),

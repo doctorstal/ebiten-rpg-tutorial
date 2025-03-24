@@ -70,14 +70,18 @@ func (s *Sprite) Forward(d float64) {
 }
 
 func (s *Sprite) Rect() image.Rectangle {
-	return image.Rect(int(s.X), int(s.Y), int(s.X+s.Width), int(s.Y+s.Height))
+	return image.Rect(int(s.X), int(s.Y+0.5*s.Height), int(s.X+s.Width), int(s.Y+s.Height))
 }
 
 func (s *Sprite) CheckCollision(colliders []image.Rectangle) {
 	// moveX := s.X + s.Width/2 + s.Dx + math.Copysign(s.Width/2, s.Dx)
 	// moveY := s.Y + s.Height/2 + s.Dy + math.Copysign(s.Height/2, s.Dy)
-	xRect := image.Rect(int(s.X+s.Width/2), int(s.Y), int(s.X+s.Width/2+1), int(s.Y+s.Height)).Add(image.Point{int(s.Dx + math.Copysign(s.Width/2, s.Dx)), 0})
-	yRect := image.Rect(int(s.X), int(s.Y+s.Height/2), int(s.X+s.Width), int(s.Y+s.Height/2+1)).Add(image.Point{0, int(s.Dy + math.Copysign(s.Height/2, s.Dy))})
+
+	// xRect := image.Rect(int(s.X+s.Width/2), int(s.Y), int(s.X+s.Width/2+1), int(s.Y+s.Height)).Add(image.Point{int(s.Dx + math.Copysign(s.Width/2, s.Dx)), 0})
+	// yRect := image.Rect(int(s.X), int(s.Y+s.Height/2), int(s.X+s.Width), int(s.Y+s.Height/2+1)).Add(image.Point{0, int(s.Dy + math.Copysign(s.Height/2, s.Dy))})
+
+	xRect := image.Rect(int(s.X+s.Width/2), int(s.Y+0.5*s.Height), int(s.X+s.Width/2+1), int(s.Y+s.Height)).Add(image.Point{int(s.Dx + math.Copysign(s.Width/2, s.Dx)), 0})
+	yRect := image.Rect(int(s.X), int(s.Y+0.75*s.Height), int(s.X+s.Width), int(s.Y+0.75*s.Height+1)).Add(image.Point{0, int(s.Dy + math.Copysign(0.25*s.Height, s.Dy))})
 
 	for _, collider := range colliders {
 		// if (image.Point{int(moveX), int(moveY)}).In(collider) {
