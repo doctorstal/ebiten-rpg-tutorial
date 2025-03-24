@@ -44,7 +44,7 @@ func (e *EndScene) Update() SceneId {
 		return ExitSceneId
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-		return GameSceneId
+		return StartSceneId
 	}
 	if e.victory {
 		return WonSceneId

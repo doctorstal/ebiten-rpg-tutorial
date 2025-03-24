@@ -1,7 +1,8 @@
 package animations
 
 type Animation interface {
-	Update()
+	// returns true if finished
+	Update() bool
 	Frame() int
 }
 
@@ -14,7 +15,7 @@ type LoopAnimation struct {
 	frame        int
 }
 
-func (a *LoopAnimation) Update() {
+func (a *LoopAnimation) Update() bool {
 	a.frameCounter -= 1.0
 	if a.frameCounter < 0.0 {
 		a.frameCounter = a.speedInTps
@@ -23,6 +24,7 @@ func (a *LoopAnimation) Update() {
 			a.frame = a.first
 		}
 	}
+	return false
 }
 func (a *LoopAnimation) Frame() int {
 	return a.frame
@@ -39,6 +41,26 @@ func NewLoopAnimation(first, last, step int, speed float32) Animation {
 	}
 }
 
+type SingleFrameAnimation struct {
+	frame int
+}
+
+// Frame implements Animation.
+func (s *SingleFrameAnimation) Frame() int {
+	return s.frame
+}
+
+// Update implements Animation.
+func (s *SingleFrameAnimation) Update() bool {
+	return false
+}
+
+func NewSingleFrameAnimation(frame int) Animation {
+	return &SingleFrameAnimation{
+		frame: frame,
+	}
+}
+
 type OneTimeAnimation struct {
 	first        int
 	last         int
@@ -47,11 +69,12 @@ type OneTimeAnimation struct {
 	frameCounter float32
 	frame        int
 	stopped      bool
+	removeAfter         bool
 }
 
-func (a *OneTimeAnimation) Update() {
+func (a *OneTimeAnimation) Update() (remove bool) {
 	if a.stopped {
-		return
+		return a.removeAfter
 	}
 	a.frameCounter -= 1.0
 	if a.frameCounter < 0.0 {
@@ -61,12 +84,13 @@ func (a *OneTimeAnimation) Update() {
 			a.stopped = true
 		}
 	}
+	return false
 }
 func (a *OneTimeAnimation) Frame() int {
 	return a.frame
 }
 
-func NewOneTimeAnimation(first, last, step int, speed float32) Animation {
+func NewOneTimeAnimation(first, last, step int, speed float32, removeAfter bool) Animation {
 	return &OneTimeAnimation{
 		first,
 		last,
@@ -75,5 +99,6 @@ func NewOneTimeAnimation(first, last, step int, speed float32) Animation {
 		speed,
 		first,
 		false,
+		removeAfter,
 	}
 }

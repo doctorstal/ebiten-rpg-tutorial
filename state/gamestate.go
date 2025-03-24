@@ -3,9 +3,9 @@ package state
 type Hero int
 
 const (
-	Samurai Hero = iota
-	Robot
-	Skeleton
+	HeroSamurai Hero = iota
+	HeroRobot
+	HeroSkeleton
 )
 
 type GlobalGameState struct {

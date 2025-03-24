@@ -41,7 +41,7 @@ func personAnimations() map[SpriteState]animations.Animation {
 		AttackUp:    animations.NewLoopAnimation(1, 17, 16, 10.0),
 		AttackLeft:  animations.NewLoopAnimation(2, 18, 16, 10.0),
 		AttackRight: animations.NewLoopAnimation(3, 19, 16, 10.0),
-		Dead:        animations.NewOneTimeAnimation(0, 24, 24, 10.0),
+		Dead:        animations.NewOneTimeAnimation(0, 24, 24, 10.0, false),
 	}
 }
 

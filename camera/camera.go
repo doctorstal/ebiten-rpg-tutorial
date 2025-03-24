@@ -66,6 +66,11 @@ func (c *Camera) RenderOpts(screen *ebiten.Image, subimage *ebiten.Image, x, y f
 		subimage,
 		opts,
 	)
+	opts.GeoM.Translate(
+		-c.X-x,
+		-c.Y-y,
+	)
+
 }
 
 func (c *Camera) ViewRect() image.Rectangle {

@@ -26,12 +26,21 @@ const (
 
 type Sprite struct {
 	Img                 *ebiten.Image
+	drawOpts            *ebiten.DrawImageOptions
 	X, Y, Width, Height float64
 	Direction           int
 	Animations          map[SpriteState]animations.Animation
 	Spritesheet         *spritesheet.SpriteSheet
 	Dx, Dy              float64
 	state               SpriteState
+}
+
+func (s *Sprite) DrawOpts() *ebiten.DrawImageOptions {
+	// TODO remove check when we have Sprite constructor
+	if s.drawOpts == nil {
+		return &ebiten.DrawImageOptions{}
+	}
+	return s.drawOpts
 }
 
 func (s *Sprite) Dist(other *Sprite) float64 {
@@ -61,9 +70,9 @@ func (s *Sprite) Forward(d float64) {
 	case 0:
 		s.Dy = d
 	case 1:
-		s.Dy = -d
-	case 2:
 		s.Dx = -d
+	case 2:
+		s.Dy = -d
 	case 3:
 		s.Dx = d
 	}
@@ -113,11 +122,13 @@ func (s *Sprite) UpdateState() {
 	}
 }
 
-func (s *Sprite) UpdateAnimation() {
+// returns true if finished
+func (s *Sprite) UpdateAnimation() bool {
 	animation := s.ActiveAnimation()
 	if animation != nil {
-		animation.Update()
+		return animation.Update()
 	}
+	return false
 }
 
 func (s *Sprite) ActiveAnimation() animations.Animation {

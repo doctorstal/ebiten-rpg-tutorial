@@ -55,15 +55,15 @@ func (s *StartScene) FirstLoad() {
 	)
 
 	samuraiContainer, samuraiBtn := newButtonWithImage("assets/images/samurai_faceset.png", func() {
-		s.selectCharacter(state.Samurai)
+		s.selectCharacter(state.HeroSamurai)
 	})
 
 	robotContainer, robotBtn := newButtonWithImage("assets/images/robot_faceset.png", func() {
-		s.selectCharacter(state.Robot)
+		s.selectCharacter(state.HeroRobot)
 	})
 
 	skeletonContainer, skeletonBtn := newButtonWithImage("assets/images/skeleton_faceset.png", func() {
-		s.selectCharacter(state.Skeleton)
+		s.selectCharacter(state.HeroSkeleton)
 	})
 
 	samuraiBtn.AddFocus(widget.FOCUS_NEXT, robotBtn)

@@ -15,7 +15,7 @@ type Game struct {
 
 func NewGame() *Game {
 	gameState := &state.GlobalGameState{
-		SelectedHero: state.Samurai,
+		SelectedHero: state.HeroSamurai,
 	}
 
 	startScene := scenes.NewStartScene(gameState)
