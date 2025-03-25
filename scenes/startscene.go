@@ -2,7 +2,6 @@ package scenes
 
 import (
 	"bytes"
-	"fmt"
 	"image/color"
 	"log"
 	"rpg-tutorial/state"
@@ -27,7 +26,7 @@ type StartScene struct {
 // Draw implements Scene.
 func (s *StartScene) Draw(screen *ebiten.Image) {
 	s.ui.Draw(screen)
-	ebitenutil.DebugPrint(screen, "Press <Enter> to start.")
+	ebitenutil.DebugPrint(screen, "Choose your hero.")
 }
 
 // FirstLoad implements Scene.
@@ -156,22 +155,11 @@ func (s *StartScene) Update() SceneId {
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		return ExitSceneId
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-		return GameSceneId
-	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
 		s.ui.ChangeFocus(widget.FOCUS_PREVIOUS)
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
-
-		fmt.Println(s.ui.GetFocusedWidget())
 		s.ui.ChangeFocus(widget.FOCUS_NEXT)
-	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
-		if btn, ok := s.ui.GetFocusedWidget().(*widget.Button); ok {
-			fmt.Println(btn)
-			// btn.Click()
-		}
 	}
 	if s.selected {
 		s.selected = false

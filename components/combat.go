@@ -7,6 +7,7 @@ type Combat interface {
 	Attack() bool
 	Update()
 	Damage(amount uint)
+	Damaged() bool
 	Heal(amount uint)
 }
 
@@ -14,6 +15,12 @@ type BasicCombat struct {
 	health      int
 	attackPower uint
 	attacking   bool
+	damaged     bool
+}
+
+// Damaged implements Combat.
+func (b *BasicCombat) Damaged() bool {
+	return b.damaged
 }
 
 // Attack implements Combat.
@@ -36,6 +43,7 @@ func (b *BasicCombat) AttackPower() uint {
 }
 
 func (b *BasicCombat) Damage(amount uint) {
+	b.damaged = true
 	b.health -= int(amount)
 }
 
@@ -59,6 +67,7 @@ type PlayerCombat struct {
 	attackCooldown  int
 	attackImmobile  int
 	timeSinceAttack int
+	timeSinceDamage int
 }
 
 func NewPlayerCombat(health int, attackPower uint, attackCooldown int, attackImmobile int) Combat {
@@ -67,7 +76,14 @@ func NewPlayerCombat(health int, attackPower uint, attackCooldown int, attackImm
 		attackCooldown:  attackCooldown,
 		attackImmobile:  attackImmobile,
 		timeSinceAttack: 1000,
+		timeSinceDamage: 1000,
 	}
+}
+
+func (p *PlayerCombat) Damage(amt uint) {
+	p.health -= int(amt)
+	p.timeSinceDamage = 0
+	p.damaged = true
 }
 
 func (p *PlayerCombat) Attack() bool {
@@ -86,12 +102,19 @@ func (p *PlayerCombat) Update() {
 	if p.timeSinceAttack >= p.attackImmobile {
 		p.attacking = false
 	}
+	if p.timeSinceDamage < 1000 {
+		p.timeSinceDamage++
+	}
+	if p.timeSinceDamage >= 3 {
+		p.damaged = false
+	}
 }
 
 type EnemyCombat struct {
 	*BasicCombat
 	attackCooldown  int
 	timeSinceAttack int
+	timeSinceDamage int
 }
 
 func NewEnemyCombat(health int, attackPower uint, attackCooldown int) Combat {
@@ -111,11 +134,23 @@ func (e *EnemyCombat) Attack() bool {
 	return false
 }
 
+func (e *EnemyCombat) Damage(amt uint) {
+	e.health -= int(amt)
+	e.timeSinceDamage = 0
+	e.damaged = true
+}
+
 func (e *EnemyCombat) Update() {
 	if e.timeSinceAttack < 1000 {
 		e.timeSinceAttack++
 	}
 	if e.timeSinceAttack >= e.attackCooldown {
 		e.attacking = false
+	}
+	if e.timeSinceDamage < 1000 {
+		e.timeSinceDamage++
+	}
+	if e.timeSinceDamage >= 3 {
+		e.damaged = false
 	}
 }

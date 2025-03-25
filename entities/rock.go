@@ -38,7 +38,7 @@ func (b *Rock) GetSprite() *Sprite {
 
 // ShouldRemove implements AttackItem.
 func (b *Rock) ShouldRemove() bool {
-	return b.MoveSpeed < 0.1 || b.state == Dead
+	return b.MoveSpeed < 0.3 || b.state == Dead
 }
 
 // Update implements AttackItem.
@@ -61,10 +61,10 @@ func NewRock(img *ebiten.Image, x, y float64, dmg uint, dir int, speed float64) 
 			Width:       constants.TileSize,
 			Height:      constants.TileSize,
 			Img:         img,
-			Spritesheet: spritesheet.NewSpriteSheet(4, 1, 16),
+			Spritesheet: spritesheet.NewSpriteSheet(9, 1, 16),
 			Animations: map[SpriteState]animations.Animation{
 				Idle: animations.NewLoopAnimation(0, 3, 1, 1.0),
-				Dead: animations.NewSingleFrameAnimation(0),
+				Dead: animations.NewOneTimeAnimation(4, 8, 1, 1.0, true),
 			},
 			Direction: dir,
 			state:     Idle,

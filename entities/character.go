@@ -25,6 +25,7 @@ func NewCharacter(img *ebiten.Image, x, y float64, combat components.Combat) *Ch
 			Height:      constants.TileSize,
 			Spritesheet: spritesheet.NewSpriteSheet(4, 7, 16),
 			Animations:  personAnimations(),
+			drawOpts: &ebiten.DrawImageOptions{},
 		},
 		CombatComponent: combat,
 	}
@@ -51,7 +52,7 @@ func (s *Character) Rect() image.Rectangle{
 }
 
 func (c *Character) Move() {
-	if !c.CombatComponent.Attacking() {
+	if !c.CombatComponent.Attacking() && !c.CombatComponent.Damaged() {
 		c.Sprite.Move()
 	}
 }
@@ -62,6 +63,12 @@ func (c *Character) Die() {
 
 func (c *Character) UpdateState() {
 	if !c.CombatComponent.Attacking() {
+		if c.CombatComponent.Damaged() {
+			c.drawOpts.ColorM.Scale(0, 0, 0, 1)
+			c.drawOpts.ColorM.Translate(1, 1, 1, 0)
+		} else {
+			c.drawOpts.ColorM.Reset()
+		}
 		c.Sprite.UpdateState()
 		return
 	}
