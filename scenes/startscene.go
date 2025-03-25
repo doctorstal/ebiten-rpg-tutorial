@@ -2,6 +2,7 @@ package scenes
 
 import (
 	"bytes"
+	"fmt"
 	"image/color"
 	"log"
 	"rpg-tutorial/state"
@@ -158,20 +159,20 @@ func (s *StartScene) Update() SceneId {
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 		return GameSceneId
 	}
-	// if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
-	// 	s.ui.ChangeFocus(widget.FOCUS_PREVIOUS)
-	// }
-	// if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
-	//
-	// 	fmt.Println(s.ui.GetFocusedWidget())
-	// 	s.ui.ChangeFocus(widget.FOCUS_NEXT)
-	// }
-	// if inpututil.IsKeyJustPressed(ebiten.KeyF) {
-	// 	if btn, ok := s.ui.GetFocusedWidget().(*widget.Button); ok {
-	// 		fmt.Println(btn)
-	// 		// btn.Click()
-	// 	}
-	// }
+	if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
+		s.ui.ChangeFocus(widget.FOCUS_PREVIOUS)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
+
+		fmt.Println(s.ui.GetFocusedWidget())
+		s.ui.ChangeFocus(widget.FOCUS_NEXT)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
+		if btn, ok := s.ui.GetFocusedWidget().(*widget.Button); ok {
+			fmt.Println(btn)
+			// btn.Click()
+		}
+	}
 	if s.selected {
 		s.selected = false
 		s.ui.ClearFocus()
