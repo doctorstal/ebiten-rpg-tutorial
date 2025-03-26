@@ -17,7 +17,7 @@ type Rock struct {
 }
 
 // HitRect implements AttackItem.
-func (b *Rock) HitRect() image.Rectangle {
+func (b *Rock) HitRect() *image.Rectangle {
 	return b.Rect()
 }
 
@@ -31,9 +31,12 @@ func (b *Rock) GetAmtDamage() uint {
 	return b.AmtDamage
 }
 
-// GetSprite implements AttackItem.
-func (b *Rock) GetSprite() *Sprite {
+// GetAnimator implements AttackItem.
+func (b *Rock) GetAnimator() Animator {
 	return b.Sprite
+}
+func (b *Rock) GetRenderer() Renderer {
+	return b.Sprite.GetRenderer()
 }
 
 // ShouldRemove implements AttackItem.

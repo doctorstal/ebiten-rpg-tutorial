@@ -3,9 +3,10 @@ package entities
 import "image"
 
 type AttackItem interface {
-	GetSprite() *Sprite
+	GetRenderer() Renderer
+	GetAnimator() Animator
 	Update()
-	HitRect() image.Rectangle
+	HitRect() *image.Rectangle
 	GetAmtDamage() uint
 	DoDamage()
 	ShouldRemove() bool

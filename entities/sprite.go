@@ -4,6 +4,7 @@ import (
 	"image"
 	"math"
 	"rpg-tutorial/animations"
+	"rpg-tutorial/constants"
 	"rpg-tutorial/spritesheet"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -24,6 +25,40 @@ const (
 	Dead
 )
 
+type Animator interface {
+	UpdateAnimation() bool
+	GetRenderer() Renderer
+}
+
+type Renderer interface {
+	Image() *ebiten.Image
+	DrawOpts() *ebiten.DrawImageOptions
+	Rect() *image.Rectangle
+	Z() int
+}
+
+type BasicRenderer struct {
+	img      *ebiten.Image
+	drawOpts *ebiten.DrawImageOptions
+	rect     *image.Rectangle
+	z int
+}
+
+// Z implements Renderer.
+func (b *BasicRenderer) Z() int {
+	return b.z
+}
+
+func (b *BasicRenderer) Image() *ebiten.Image {
+	return b.img
+}
+func (b *BasicRenderer) DrawOpts() *ebiten.DrawImageOptions {
+	return b.drawOpts
+}
+func (b *BasicRenderer) Rect() *image.Rectangle {
+	return b.rect
+}
+
 type Sprite struct {
 	Img                 *ebiten.Image
 	drawOpts            *ebiten.DrawImageOptions
@@ -33,6 +68,29 @@ type Sprite struct {
 	Spritesheet         *spritesheet.SpriteSheet
 	Dx, Dy              float64
 	state               SpriteState
+}
+
+func (s *Sprite) GetRenderer() Renderer {
+	frame := 0
+	activeAnim := s.ActiveAnimation()
+	if activeAnim != nil {
+		frame = activeAnim.Frame()
+	}
+	var frameRect image.Rectangle
+	if s.Spritesheet != nil {
+		frameRect = s.Spritesheet.Rect(frame)
+	} else {
+		frameRect = image.Rect(0, 0, constants.TileSize, constants.TileSize)
+	}
+	rect := image.Rect(int(s.X), int(s.Y), int(s.X+s.Width), int(s.Y+s.Height))
+
+	return &BasicRenderer{
+		img: s.Img.SubImage(
+			frameRect,
+		).(*ebiten.Image),
+		drawOpts: s.DrawOpts(),
+		rect:     &rect,
+	}
 }
 
 func (s *Sprite) DrawOpts() *ebiten.DrawImageOptions {
@@ -78,11 +136,12 @@ func (s *Sprite) Forward(d float64) {
 	}
 }
 
-func (s *Sprite) Rect() image.Rectangle {
-	return image.Rect(int(s.X), int(s.Y+0.5*s.Height), int(s.X+s.Width), int(s.Y+s.Height))
+func (s *Sprite) Rect() *image.Rectangle {
+	r := image.Rect(int(s.X), int(s.Y+0.5*s.Height), int(s.X+s.Width), int(s.Y+s.Height))
+	return &r
 }
 
-func (s *Sprite) CheckCollision(colliders []image.Rectangle) {
+func (s *Sprite) CheckCollision(colliders []*image.Rectangle) {
 	// moveX := s.X + s.Width/2 + s.Dx + math.Copysign(s.Width/2, s.Dx)
 	// moveY := s.Y + s.Height/2 + s.Dy + math.Copysign(s.Height/2, s.Dy)
 

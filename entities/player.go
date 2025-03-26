@@ -32,7 +32,7 @@ func (p *Player) NewBomb() AttackItem {
 
 func NewPlayer(hero state.Hero, x, y float64) *Player {
 	var playerImgPath = "assets/images/samurai.png"
-	var bombImgPath = "assets/images/bomb.png"
+	var bombImgPath = "assets/images/weapons/bomb.png"
 
 	switch hero {
 	case state.HeroRobot:

@@ -25,7 +25,7 @@ func NewCharacter(img *ebiten.Image, x, y float64, combat components.Combat) *Ch
 			Height:      constants.TileSize,
 			Spritesheet: spritesheet.NewSpriteSheet(4, 7, 16),
 			Animations:  personAnimations(),
-			drawOpts: &ebiten.DrawImageOptions{},
+			drawOpts:    &ebiten.DrawImageOptions{},
 		},
 		CombatComponent: combat,
 	}
@@ -46,9 +46,9 @@ func personAnimations() map[SpriteState]animations.Animation {
 	}
 }
 
-func (s *Character) Rect() image.Rectangle{
-	return image.Rect(int(s.X), int(s.Y), int(s.X+s.Width), int(s.Y+s.Height))
-
+func (s *Character) Rect() *image.Rectangle {
+	r := image.Rect(int(s.X), int(s.Y), int(s.X+s.Width), int(s.Y+s.Height))
+	return &r
 }
 
 func (c *Character) Move() {
@@ -64,10 +64,9 @@ func (c *Character) Die() {
 func (c *Character) UpdateState() {
 	if !c.CombatComponent.Attacking() {
 		if c.CombatComponent.Damaged() {
-			c.drawOpts.ColorM.Scale(0, 0, 0, 1)
-			c.drawOpts.ColorM.Translate(1, 1, 1, 0)
+			c.drawOpts.ColorScale.Scale(5, 5, 5, 1)
 		} else {
-			c.drawOpts.ColorM.Reset()
+			c.drawOpts.ColorScale.Reset()
 		}
 		c.Sprite.UpdateState()
 		return

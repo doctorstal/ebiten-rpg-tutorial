@@ -17,7 +17,7 @@ type EnergyBall struct {
 }
 
 // HitRect implements AttackItem.
-func (e *EnergyBall) HitRect() image.Rectangle {
+func (e *EnergyBall) HitRect() *image.Rectangle {
 	return e.Rect()
 }
 
@@ -31,9 +31,12 @@ func (e *EnergyBall) GetAmtDamage() uint {
 	return e.AmtDamage
 }
 
-// GetSprite implements AttackItem.
-func (e *EnergyBall) GetSprite() *Sprite {
+// GetAnimator implements AttackItem.
+func (e *EnergyBall) GetAnimator() Animator {
 	return e.Sprite
+}
+func (e *EnergyBall) GetRenderer() Renderer {
+	return e.Sprite.GetRenderer()
 }
 
 // ShouldRemove implements AttackItem.

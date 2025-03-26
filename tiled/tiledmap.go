@@ -64,16 +64,17 @@ func (t *TiledMap) ObjectsImage(rect image.Rectangle) *ebiten.Image {
 	return ebiten.NewImageFromImage(subImage)
 }
 
-func (t *TiledMap) ObjectRects() []image.Rectangle {
-	rects := make([]image.Rectangle, 0)
+func (t *TiledMap) ObjectRects() []*image.Rectangle {
+	rects := make([]*image.Rectangle, 0)
 	for _, og := range t.gameMap.ObjectGroups {
 		for _, o := range og.Objects {
-			rects = append(rects, image.Rect(
+			rect := image.Rect(
 				int(o.X),
 				int(o.Y-o.Height),
 				int(o.X+o.Width),
 				int(o.Y),
-			))
+			)
+			rects = append(rects, &rect)
 		}
 	}
 	return rects

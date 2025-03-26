@@ -9,19 +9,39 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type BombAnimator struct {
+	sprite *Sprite
+}
+
+// GetRenderer implements Animator.
+func (b *BombAnimator) GetRenderer() Renderer {
+	r := b.sprite.GetRenderer().(*BasicRenderer)
+	if b.sprite.state == Dead && b.sprite.ActiveAnimation().Frame() >= 6 {
+		r.z = -1
+	}
+	return r
+}
+
+// UpdateAnimation implements Animator.
+func (b *BombAnimator) UpdateAnimation() bool {
+	return b.sprite.UpdateAnimation()
+}
+
 type Bomb struct {
 	*Sprite
 	AmtDamage uint
 }
 
 // HitRect implements AttackItem.
-func (b *Bomb) HitRect() image.Rectangle {
+func (b *Bomb) HitRect() *image.Rectangle {
 	return b.Rect()
 }
 
 // DoDamage implements AttackItem.
 func (b *Bomb) DoDamage() {
 	b.state = Dead
+	b.drawOpts = &ebiten.DrawImageOptions{}
+    b.drawOpts.ColorScale.SetA(0.7)
 }
 
 // GetAmtDamage implements AttackItem.
@@ -29,9 +49,12 @@ func (b *Bomb) GetAmtDamage() uint {
 	return b.AmtDamage
 }
 
-// GetSprite implements AttackItem.
-func (b *Bomb) GetSprite() *Sprite {
-	return b.Sprite
+// GetAnimator implements AttackItem.
+func (b *Bomb) GetAnimator() Animator {
+	return &BombAnimator{b.Sprite}
+}
+func (b *Bomb) GetRenderer() Renderer {
+	return b.Sprite.GetRenderer()
 }
 
 // ShouldRemove implements AttackItem.
