@@ -5,9 +5,11 @@ import (
 	"math"
 	"rpg-tutorial/animations"
 	"rpg-tutorial/constants"
+	"rpg-tutorial/resources"
 	"rpg-tutorial/spritesheet"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	resource "github.com/quasilyte/ebitengine-resource"
 )
 
 type EnergyBall struct {
@@ -52,7 +54,7 @@ func (e *EnergyBall) Update() {
 	e.Move()
 }
 
-func NewEnergyBall(img *ebiten.Image, x, y float64, dmg uint, dir int, speed float64) AttackItem {
+func NewEnergyBall(loader *resource.Loader, x, y float64, dmg uint, dir int, speed float64) AttackItem {
 	opts := &ebiten.DrawImageOptions{}
 	opts.GeoM.Translate(-constants.TileSize*0.5, -constants.TileSize*0.5)
 	opts.GeoM.Rotate(float64(2+dir) * 0.5 * math.Pi)
@@ -63,7 +65,7 @@ func NewEnergyBall(img *ebiten.Image, x, y float64, dmg uint, dir int, speed flo
 			Y:           y,
 			Width:       constants.TileSize,
 			Height:      constants.TileSize,
-			Img:         img,
+			Img:         loader.LoadImage(resources.ImgEnergyBall).Data,
 			Spritesheet: spritesheet.NewSpriteSheet(4, 1, 16),
 			Animations: map[SpriteState]animations.Animation{
 				Idle: animations.NewLoopAnimation(0, 3, 1, 1.0),

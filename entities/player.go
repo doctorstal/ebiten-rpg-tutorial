@@ -2,64 +2,52 @@ package entities
 
 import (
 	"fmt"
-	"log"
 	"rpg-tutorial/components"
+	"rpg-tutorial/resources"
 	"rpg-tutorial/state"
 
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	resource "github.com/quasilyte/ebitengine-resource"
 )
 
 type Player struct {
 	*Character
 	AttackItems []AttackItem
-	BombImg     *ebiten.Image
 	hero        state.Hero
+	loader      *resource.Loader
 }
 
 func (p *Player) NewBomb() AttackItem {
 	switch p.hero {
 	case state.HeroRobot:
-		return NewBomb(p.BombImg, p.X, p.Y, p.CombatComponent.AttackPower())
+		return NewBomb(p.loader, p.X, p.Y+1, p.CombatComponent.AttackPower())
 	case state.HeroSamurai:
-		return NewEnergyBall(p.BombImg, p.X, p.Y, p.CombatComponent.AttackPower(), p.Direction, 8.0)
+		return NewEnergyBall(p.loader, p.X, p.Y, p.CombatComponent.AttackPower(), p.Direction, 8.0)
 	case state.HeroSkeleton:
-		return NewRock(p.BombImg, p.X, p.Y, p.CombatComponent.AttackPower(), p.Direction, 5.0)
+		return NewRock(p.loader, p.X, p.Y, p.CombatComponent.AttackPower(), p.Direction, 5.0)
 	default:
 		panic(fmt.Sprintf("unexpected state.Hero: %#v", p.hero))
 	}
 }
 
-func NewPlayer(hero state.Hero, x, y float64) *Player {
-	var playerImgPath = "assets/images/samurai.png"
-	var bombImgPath = "assets/images/weapons/bomb.png"
+func NewPlayer(loader *resource.Loader, hero state.Hero, x, y float64) *Player {
+	playerImgId := resources.ImgSamurai
 
 	switch hero {
 	case state.HeroRobot:
-		playerImgPath = "assets/images/robot.png"
+		playerImgId = resources.ImgRobot
 	case state.HeroSamurai:
-		playerImgPath = "assets/images/samurai.png"
-		bombImgPath = "assets/images/weapons/energy_ball.png"
+		playerImgId = resources.ImgSamurai
 	case state.HeroSkeleton:
-		playerImgPath = "assets/images/skeleton.png"
-		bombImgPath = "assets/images/weapons/rock.png"
+		playerImgId = resources.ImgSkeleton
 	default:
 		panic(fmt.Sprintf("unexpected state.Hero: %#v", hero))
 	}
 
-	playerImg, _, err := ebitenutil.NewImageFromFile(playerImgPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	bombImg, _, err := ebitenutil.NewImageFromFile(bombImgPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	playerImg := loader.LoadImage(playerImgId).Data
 	return &Player{
 		Character:   NewCharacter(playerImg, x, y, components.NewPlayerCombat(5, 1, 30, 10)),
-		BombImg:     bombImg,
 		AttackItems: make([]AttackItem, 0),
 		hero:        hero,
+		loader:      loader,
 	}
 }

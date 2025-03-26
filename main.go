@@ -1,11 +1,17 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"log"
+	"rpg-tutorial/resources"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/audio"
 )
+
+//go:embed assets
+var assets embed.FS
 
 func main() {
 	ebiten.SetWindowSize(1280, 960)
@@ -13,7 +19,9 @@ func main() {
 	ebiten.SetFullscreen(true)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
-	game := NewGame()
+	audioContext := audio.NewContext(44100)
+	loader := resources.NewResourceLoader(assets, audioContext)
+	game := NewGame(loader)
 
 	fmt.Println("Starting...")
 	if err := ebiten.RunGame(game); err != nil {

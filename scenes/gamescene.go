@@ -9,6 +9,7 @@ import (
 	"rpg-tutorial/components"
 	"rpg-tutorial/constants"
 	"rpg-tutorial/entities"
+	"rpg-tutorial/resources"
 	"rpg-tutorial/state"
 	"rpg-tutorial/tiled"
 	"slices"
@@ -17,6 +18,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/colorm"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	resource "github.com/quasilyte/ebitengine-resource"
 )
 
 type GameScene struct {
@@ -32,6 +34,7 @@ type GameScene struct {
 	cam             *camera.Camera
 	colliders       []*image.Rectangle
 	isLoaded        bool
+	loader          *resource.Loader
 }
 
 // IsLoaded implements Scene.
@@ -150,31 +153,9 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 func (g *GameScene) FirstLoad() {
 
-	shadowImg, _, err := ebitenutil.NewImageFromFile("assets/images/shadow.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	skeletonImg, _, err := ebitenutil.NewImageFromFile("assets/images/skeleton.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	potionImg, _, err := ebitenutil.NewImageFromFile("assets/images/LifePot.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	tilemapJSON, err := tiled.NewTilemapJSON("assets/maps/first.tmj")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	tilesets, err := tilemapJSON.GenTilesets()
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	shadowImg := g.loader.LoadImage(resources.ImgShadow).Data
+	skeletonImg := g.loader.LoadImage(resources.ImgSkeleton).Data
+	potionImg := g.loader.LoadImage(resources.ImgPotion).Data
 
 	tiledMap, err := tiled.NewTiledMap("assets/maps/first.tmx")
 	if err != nil {
@@ -193,7 +174,7 @@ func (g *GameScene) FirstLoad() {
 	cm.Scale(1, 1, 1, 0.3)
 	colorm.DrawImage(g.shadowImg, shadowImg, cm, nil)
 
-	g.player = entities.NewPlayer(g.gameState.SelectedHero, 360.0, 100.0)
+	g.player = entities.NewPlayer(g.loader, g.gameState.SelectedHero, 360.0, 100.0)
 
 	g.enemies = []*entities.Enemy{
 		newEnemy(50.0, 50.0, true),
@@ -221,30 +202,18 @@ func (g *GameScene) FirstLoad() {
 			AmtHeal: 1,
 		},
 	}
+	
 	g.tiledMap = tiledMap
-	g.tilemapJSON = tilemapJSON
-	g.tilesets = tilesets
+	mapWidth := tiledMap.Width()
+	mapHeight := tiledMap.Height()
 	g.cam = camera.NewCamera(
 		320,
 		240,
-		float64(tilemapJSON.Layers[0].Width*constants.TileSize),
-		float64(tilemapJSON.Layers[0].Height*constants.TileSize),
+		mapWidth,
+		mapHeight,
 	)
 
 	colliders := make([]*image.Rectangle, 0)
-
-	// for _, layer := range tilemapJSON.Layers {
-	// 	for _, obj := range layer.Objects {
-	// 		x := int(obj.X)
-	// 		y := int(obj.Y - float64(obj.Height))
-	// 		colliders = append(colliders, image.Rect(
-	// 			x,
-	// 			y,
-	// 			x+obj.Width,
-	// 			y+obj.Height,
-	// 		))
-	// 	}
-	// }
 
 	for _, objectRect := range g.tiledMap.ObjectRects() {
 		colliders = append(colliders, objectRect)
@@ -421,7 +390,7 @@ func (g *GameScene) Update() SceneId {
 	return GameSceneId
 }
 
-func NewGameScene(gameState *state.GlobalGameState) Scene {
+func NewGameScene(gameState *state.GlobalGameState, loader *resource.Loader) Scene {
 	return &GameScene{
 		gameState:       gameState,
 		player:          nil,
@@ -432,5 +401,6 @@ func NewGameScene(gameState *state.GlobalGameState) Scene {
 		tilesets:        make([]tiled.Tileset, 0),
 		cam:             nil,
 		colliders:       make([]*image.Rectangle, 0),
+		loader:          loader,
 	}
 }

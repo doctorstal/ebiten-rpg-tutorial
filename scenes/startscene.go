@@ -1,9 +1,7 @@
 package scenes
 
 import (
-	"bytes"
-	"image/color"
-	"log"
+	"rpg-tutorial/resources"
 	"rpg-tutorial/state"
 
 	"github.com/ebitenui/ebitenui"
@@ -12,12 +10,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/hajimehoshi/ebiten/v2/text/v2"
-	"golang.org/x/image/font/gofont/goregular"
+	resource "github.com/quasilyte/ebitengine-resource"
 )
 
 type StartScene struct {
 	gameState *state.GlobalGameState
+	loader    *resource.Loader
 	selected  bool
 	isLoaded  bool
 	ui        ebitenui.UI
@@ -35,7 +33,7 @@ func (s *StartScene) FirstLoad() {
 
 	// construct a new container that serves as the root of the UI hierarchy
 	rootContainer := widget.NewContainer(
-		widget.ContainerOpts.BackgroundImage(nineSliceFromFile15x15("assets/images/ui/nine_path_panel.png")),
+		widget.ContainerOpts.BackgroundImage(eimage.NewNineSlice(s.loader.LoadImage(resources.UiPanelBg).Data, [3]int{6, 3, 6}, [3]int{6, 3, 6})),
 		widget.ContainerOpts.Layout(widget.NewAnchorLayout()),
 	)
 	innerContainer := widget.NewContainer(
@@ -54,15 +52,15 @@ func (s *StartScene) FirstLoad() {
 		),
 	)
 
-	samuraiContainer, samuraiBtn := newButtonWithImage("assets/images/samurai_faceset.png", func() {
+	samuraiContainer, samuraiBtn := newButtonWithImage(s.loader, resources.ImgSamuraiFace, func() {
 		s.selectCharacter(state.HeroSamurai)
 	})
 
-	robotContainer, robotBtn := newButtonWithImage("assets/images/robot_faceset.png", func() {
+	robotContainer, robotBtn := newButtonWithImage(s.loader, resources.ImgRobotFace, func() {
 		s.selectCharacter(state.HeroRobot)
 	})
 
-	skeletonContainer, skeletonBtn := newButtonWithImage("assets/images/skeleton_faceset.png", func() {
+	skeletonContainer, skeletonBtn := newButtonWithImage(s.loader, resources.ImgSkeletonFace, func() {
 		s.selectCharacter(state.HeroSkeleton)
 	})
 
@@ -90,10 +88,9 @@ func (s *StartScene) selectCharacter(c state.Hero) {
 	s.selected = true
 }
 
-func newButtonWithImage(spritePath string, callback func()) (*widget.Container, *widget.Button) {
-	buttonImage := loadButtonImage()
-	buttonIcon := loadButtonIcon(spritePath)
-	buttonDisabledIcon := loadDisabledButtonIcon()
+func newButtonWithImage(loader *resource.Loader, spriteId resource.ImageID, callback func()) (*widget.Container, *widget.Button) {
+	buttonImage := loadButtonImage(loader)
+	buttonIcon := loader.LoadImage(spriteId).Data
 
 	buttonStackedLayout := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewStackedLayout()),
@@ -107,10 +104,8 @@ func newButtonWithImage(spritePath string, callback func()) (*widget.Container, 
 	)
 	btnIconG := widget.NewGraphic(
 		widget.GraphicOpts.Images(&widget.GraphicImage{
-			Idle:     buttonIcon,
-			Disabled: buttonDisabledIcon,
-		},
-		),
+			Idle: buttonIcon,
+		}),
 	)
 	// construct a pressable button
 	button := widget.NewButton(
@@ -169,62 +164,18 @@ func (s *StartScene) Update() SceneId {
 	return StartSceneId
 }
 
-func NewStartScene(gameState *state.GlobalGameState) Scene {
-	return &StartScene{gameState: gameState}
+func NewStartScene(gameState *state.GlobalGameState, loader *resource.Loader) Scene {
+	return &StartScene{gameState: gameState, loader: loader}
 }
 
-func loadFont(size float64) (text.Face, error) {
-	s, err := text.NewGoTextFaceSource(bytes.NewReader(goregular.TTF))
-	if err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
-
-	return &text.GoTextFace{
-		Source: s,
-		Size:   size,
-	}, nil
-}
-func loadButtonIcon(spritePath string) *ebiten.Image {
-	icon, _, err := ebitenutil.NewImageFromFile(spritePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return icon
-}
-
-func loadDisabledButtonIcon() *ebiten.Image {
-	// we'll use a circle as an icon image
-	// in reality it could be an arbitrary *ebiten.Image
-	icon := ebiten.NewImage(32, 32)
-	ebitenutil.DrawCircle(icon, 16, 16, 16, color.RGBA{R: 250, G: 0x56, B: 0xbd, A: 255})
-	return icon
-}
-
-func loadButtonImage() *widget.ButtonImage {
-	idle := nineSliceFromFile("assets/images/ui/button_normal.png")
-	hover := nineSliceFromFile("assets/images/ui/button_hover.png")
-	pressed := nineSliceFromFile("assets/images/ui/button_pressed.png")
+func loadButtonImage(loader *resource.Loader) *widget.ButtonImage {
+	idle := eimage.NewNineSlice(loader.LoadImage(resources.UiBtnNormal).Data, [3]int{3, 10, 3}, [3]int{3, 3, 3})
+	hover := eimage.NewNineSlice(loader.LoadImage(resources.UiBtnHover).Data, [3]int{3, 10, 3}, [3]int{3, 3, 3})
+	pressed := eimage.NewNineSlice(loader.LoadImage(resources.UiBtnPressed).Data, [3]int{3, 10, 3}, [3]int{3, 3, 3})
 
 	return &widget.ButtonImage{
 		Idle:    idle,
 		Hover:   hover,
 		Pressed: pressed,
 	}
-}
-func nineSliceFromFile15x15(path string) *eimage.NineSlice {
-	idleImg, _, err := ebitenutil.NewImageFromFile(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	idle := eimage.NewNineSlice(idleImg, [3]int{6, 3, 6}, [3]int{6, 3, 6})
-	return idle
-}
-func nineSliceFromFile(path string) *eimage.NineSlice {
-	idleImg, _, err := ebitenutil.NewImageFromFile(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	idle := eimage.NewNineSlice(idleImg, [3]int{3, 10, 3}, [3]int{3, 3, 3})
-	return idle
 }

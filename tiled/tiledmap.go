@@ -79,3 +79,11 @@ func (t *TiledMap) ObjectRects() []*image.Rectangle {
 	}
 	return rects
 }
+
+func (t *TiledMap) Width() float64 {
+	return float64(t.gameMap.Width * t.gameMap.TileWidth)
+}
+
+func (t *TiledMap) Height() float64 {
+	return float64(t.gameMap.Height * t.gameMap.TileHeight)
+}

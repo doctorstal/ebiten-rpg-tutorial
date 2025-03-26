@@ -6,6 +6,7 @@ import (
 	"rpg-tutorial/state"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	resource "github.com/quasilyte/ebitengine-resource"
 )
 
 type Game struct {
@@ -13,17 +14,16 @@ type Game struct {
 	activeSceneId scenes.SceneId
 }
 
-func NewGame() *Game {
+func NewGame(loader *resource.Loader) *Game {
 	gameState := &state.GlobalGameState{
 		SelectedHero: state.HeroSamurai,
 	}
 
-	startScene := scenes.NewStartScene(gameState)
-	// startScene := scenes.NewTiledScene()
+	startScene := scenes.NewStartScene(gameState, loader)
 	startScene.FirstLoad()
 	startScene.OnEnter()
 
-	gameScene := scenes.NewGameScene(gameState)
+	gameScene := scenes.NewGameScene(gameState, loader)
 	game := &Game{
 		sceneMap: map[scenes.SceneId]scenes.Scene{
 			scenes.StartSceneId: startScene,
@@ -37,7 +37,6 @@ func NewGame() *Game {
 
 	return game
 }
-
 
 func (g *Game) Update() error {
 	nextSceneId := g.sceneMap[g.activeSceneId].Update()
