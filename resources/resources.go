@@ -17,6 +17,7 @@ const (
 	ImgRobot
 	ImgRobotFace
 	ImgBomb
+	ImgBombExplosion
 	ImgEnergyBall
 	ImgRock
 	ImgShadow
@@ -39,22 +40,23 @@ func NewResourceLoader(fs embed.FS, audioContext *audio.Context) *resource.Loade
 	}
 
 	l.ImageRegistry.Assign(map[resource.ImageID]resource.ImageInfo{
-		ImgSkeleton:     {Path: "assets/images/skeleton.png"},
-		ImgSkeletonFace: {Path: "assets/images/skeleton_faceset.png"},
-		ImgSamurai:      {Path: "assets/images/samurai.png"},
-		ImgSamuraiFace:  {Path: "assets/images/samurai_faceset.png"},
-		ImgRobot:        {Path: "assets/images/robot.png"},
-		ImgRobotFace:    {Path: "assets/images/robot_faceset.png"},
-		ImgBomb:         {Path: "assets/images/weapons/bomb.png"},
-		ImgEnergyBall:   {Path: "assets/images/weapons/energy_ball.png"},
-		ImgRock:         {Path: "assets/images/weapons/rock.png"},
-		ImgShadow:       {Path: "assets/images/shadow.png"},
-		ImgPotion:       {Path: "assets/images/potion.png"},
+		ImgSkeleton:      {Path: "assets/images/skeleton.png"},
+		ImgSkeletonFace:  {Path: "assets/images/skeleton_faceset.png"},
+		ImgSamurai:       {Path: "assets/images/samurai.png"},
+		ImgSamuraiFace:   {Path: "assets/images/samurai_faceset.png"},
+		ImgRobot:         {Path: "assets/images/robot.png"},
+		ImgRobotFace:     {Path: "assets/images/robot_faceset.png"},
+		ImgBomb:          {Path: "assets/images/weapons/bomb.png"},
+		ImgBombExplosion: {Path: "assets/images/weapons/explosion32x32.png"},
+		ImgEnergyBall:    {Path: "assets/images/weapons/energy_ball.png"},
+		ImgRock:          {Path: "assets/images/weapons/rock.png"},
+		ImgShadow:        {Path: "assets/images/shadow.png"},
+		ImgPotion:        {Path: "assets/images/potion.png"},
 
-		UiBtnNormal:     {Path: "assets/images/ui/button_normal.png"},
-		UiBtnHover:      {Path: "assets/images/ui/button_hover.png"},
-		UiBtnPressed:    {Path: "assets/images/ui/button_pressed.png"},
-		UiPanelBg:       {Path: "assets/images/ui/nine_path_panel.png"},
+		UiBtnNormal:  {Path: "assets/images/ui/button_normal.png"},
+		UiBtnHover:   {Path: "assets/images/ui/button_hover.png"},
+		UiBtnPressed: {Path: "assets/images/ui/button_pressed.png"},
+		UiPanelBg:    {Path: "assets/images/ui/nine_path_panel.png"},
 	})
 
 	return l

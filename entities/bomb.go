@@ -2,6 +2,8 @@ package entities
 
 import (
 	"image"
+	"math"
+	"math/rand"
 	"rpg-tutorial/animations"
 	"rpg-tutorial/constants"
 	"rpg-tutorial/resources"
@@ -17,16 +19,18 @@ type DeadBombAnimator struct {
 	img         *ebiten.Image
 	drawOpts    *ebiten.DrawImageOptions
 	rect        *image.Rectangle
+	deadFrame   int
 }
 
 // GetRenderer implements Animator.
 func (b *DeadBombAnimator) GetRenderer() Renderer {
 	frame := b.animation.Frame()
-	frameRect := b.spritesheet.Rect(frame)
 	z := 0
-	if frame >= 6 {
+	if frame >= 15 {
 		z = -1
+		frame = b.deadFrame
 	}
+	frameRect := b.spritesheet.Rect(frame)
 
 	return &BasicRenderer{
 		img: b.img.SubImage(
@@ -40,12 +44,14 @@ func (b *DeadBombAnimator) GetRenderer() Renderer {
 
 // UpdateAnimation implements Animator.
 func (b *DeadBombAnimator) UpdateAnimation() bool {
-	return b.animation.Update()
+	b.animation.Update()
+	return false
 }
 
 type Bomb struct {
 	*Sprite
 	AmtDamage uint
+	loader    *resource.Loader
 }
 
 // HitRect implements AttackItem.
@@ -57,7 +63,9 @@ func (b *Bomb) HitRect() *image.Rectangle {
 func (b *Bomb) DoDamage() {
 	b.state = Dead
 	b.drawOpts = &ebiten.DrawImageOptions{}
-	b.drawOpts.ColorScale.SetA(0.8)
+	b.drawOpts.GeoM.Translate(-16, -16)
+	b.drawOpts.GeoM.Rotate( 2 * math.Pi/float64(1+rand.Intn(4)))
+	b.drawOpts.GeoM.Translate(16, 16)
 }
 
 // GetAmtDamage implements AttackItem.
@@ -68,13 +76,15 @@ func (b *Bomb) GetAmtDamage() uint {
 // GetAnimator implements AttackItem.
 func (b *Bomb) GetAnimator() Animator {
 	if b.state == Dead {
-		rect := image.Rect(int(b.X), int(b.Y), int(b.X+b.Width), int(b.Y+b.Height))
+		rect := image.Rect(int(b.X-8), int(b.Y-8), int(b.X+b.Width+8), int(b.Y+b.Height+8))
+		img := b.loader.LoadImage(resources.ImgBombExplosion).Data
 		return &DeadBombAnimator{
-			animation:   b.Animations[Dead],
-			spritesheet: b.Spritesheet,
-			img:         b.Img,
+			animation:   animations.NewOneTimeAnimation(0, 15, 1, 1.0, false),
+			spritesheet: spritesheet.NewSpriteSheet(4, 5, 32),
+			img:         img,
 			drawOpts:    b.drawOpts,
 			rect:        &rect,
+			deadFrame:   16 + rand.Intn(4),
 		}
 	} else {
 		return b.Sprite
@@ -107,5 +117,6 @@ func NewBomb(loader *resource.Loader, x, y float64, dmg uint) AttackItem {
 			state: Idle,
 		},
 		AmtDamage: dmg,
+		loader:    loader,
 	}
 }
