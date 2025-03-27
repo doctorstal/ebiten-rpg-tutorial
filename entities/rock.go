@@ -3,6 +3,7 @@ package entities
 import (
 	"image"
 	"math"
+	"math/rand"
 	"rpg-tutorial/animations"
 	"rpg-tutorial/constants"
 	"rpg-tutorial/resources"
@@ -12,10 +13,46 @@ import (
 	resource "github.com/quasilyte/ebitengine-resource"
 )
 
+type DeadRockAnimator struct {
+	animation   animations.Animation
+	spritesheet *spritesheet.SpriteSheet
+	img         *ebiten.Image
+	drawOpts    *ebiten.DrawImageOptions
+	rect        *image.Rectangle
+	deadFrame   int
+}
+
+// GetRenderer implements Animator.
+func (b *DeadRockAnimator) GetRenderer() Renderer {
+	frame := b.animation.Frame()
+	z := 0
+	if frame >= 15 {
+		z = -1
+		frame = b.deadFrame
+	}
+	frameRect := b.spritesheet.Rect(frame)
+
+	return &BasicRenderer{
+		img: b.img.SubImage(
+			frameRect,
+		).(*ebiten.Image),
+		drawOpts: b.drawOpts,
+		rect:     b.rect,
+		z:        z,
+	}
+}
+
+// UpdateAnimation implements Animator.
+func (b *DeadRockAnimator) UpdateAnimation() bool {
+	b.animation.Update()
+	return false
+}
+
 type Rock struct {
 	*Sprite
 	AmtDamage uint
 	MoveSpeed float64
+	loader    *resource.Loader
 }
 
 // HitRect implements AttackItem.
@@ -35,7 +72,20 @@ func (b *Rock) GetAmtDamage() uint {
 
 // GetAnimator implements AttackItem.
 func (b *Rock) GetAnimator() Animator {
-	return b.Sprite
+	if b.state == Dead {
+		rect := image.Rect(int(b.X-7), int(b.Y-7), int(b.X+b.Width+7), int(b.Y+b.Height+7))
+		img := b.loader.LoadImage(resources.ImgRockExplosion).Data
+		return &DeadBombAnimator{
+			animation:   animations.NewOneTimeAnimation(9, 14, 1, 3.0, false),
+			spritesheet: spritesheet.NewSpriteSheet(14, 1, 30),
+			img:         img,
+			drawOpts:    GetRotationOpts(32.0, (b.Direction+2)%4),
+			rect:        &rect,
+			deadFrame:   16 + rand.Intn(4),
+		}
+	} else {
+		return b.Sprite
+	}
 }
 func (b *Rock) GetRenderer() Renderer {
 	return b.Sprite.GetRenderer()
@@ -55,10 +105,7 @@ func (b *Rock) Update() {
 }
 
 func NewRock(loader *resource.Loader, x, y float64, dmg uint, dir int, speed float64) AttackItem {
-	opts := &ebiten.DrawImageOptions{}
-	opts.GeoM.Translate(-constants.TileSize*0.5, -constants.TileSize*0.5)
-	opts.GeoM.Rotate(float64(2+dir) * 0.5 * math.Pi)
-	opts.GeoM.Translate(constants.TileSize*0.5, constants.TileSize*0.5)
+	opts := GetRotationOpts(16.0, dir)
 	return &Rock{
 		Sprite: &Sprite{
 			X:           x,
@@ -77,5 +124,14 @@ func NewRock(loader *resource.Loader, x, y float64, dmg uint, dir int, speed flo
 		},
 		AmtDamage: dmg,
 		MoveSpeed: speed,
+		loader:    loader,
 	}
+}
+
+func GetRotationOpts(frameWidth float64, dir int) *ebiten.DrawImageOptions {
+	opts := &ebiten.DrawImageOptions{}
+	opts.GeoM.Translate(-frameWidth*0.5, -frameWidth*0.5)
+	opts.GeoM.Rotate(float64(2+dir) * 0.5 * math.Pi)
+	opts.GeoM.Translate(frameWidth*0.5, frameWidth*0.5)
+	return opts
 }

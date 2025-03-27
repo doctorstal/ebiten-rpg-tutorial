@@ -10,4 +10,5 @@ const (
 
 type GlobalGameState struct {
 	SelectedHero Hero
+	DebugMode bool
 }

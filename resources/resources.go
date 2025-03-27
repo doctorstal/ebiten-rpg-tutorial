@@ -20,6 +20,7 @@ const (
 	ImgBombExplosion
 	ImgEnergyBall
 	ImgRock
+	ImgRockExplosion
 	ImgShadow
 	ImgPotion
 
@@ -50,6 +51,7 @@ func NewResourceLoader(fs embed.FS, audioContext *audio.Context) *resource.Loade
 		ImgBombExplosion: {Path: "assets/images/weapons/explosion32x32.png"},
 		ImgEnergyBall:    {Path: "assets/images/weapons/energy_ball.png"},
 		ImgRock:          {Path: "assets/images/weapons/rock.png"},
+		ImgRockExplosion: {Path: "assets/images/weapons/rock_element32x32.png"},
 		ImgShadow:        {Path: "assets/images/shadow.png"},
 		ImgPotion:        {Path: "assets/images/potion.png"},
 

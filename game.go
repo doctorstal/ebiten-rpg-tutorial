@@ -6,12 +6,14 @@ import (
 	"rpg-tutorial/state"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	resource "github.com/quasilyte/ebitengine-resource"
 )
 
 type Game struct {
 	sceneMap      map[scenes.SceneId]scenes.Scene
 	activeSceneId scenes.SceneId
+	gameState *state.GlobalGameState
 }
 
 func NewGame(loader *resource.Loader) *Game {
@@ -33,12 +35,16 @@ func NewGame(loader *resource.Loader) *Game {
 			scenes.LostSceneId:  scenes.NewEndScene(gameScene, false),
 		},
 		activeSceneId: scenes.StartSceneId,
+		gameState: gameState,
 	}
 
 	return game
 }
 
 func (g *Game) Update() error {
+	if inpututil.IsKeyJustPressed(ebiten.KeyD){
+		g.gameState.DebugMode = !g.gameState.DebugMode
+	}
 	nextSceneId := g.sceneMap[g.activeSceneId].Update()
 	if nextSceneId == scenes.ExitSceneId {
 		g.sceneMap[g.activeSceneId].OnExit()

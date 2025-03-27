@@ -48,7 +48,7 @@ func (g *GameScene) drawShadow(screen *ebiten.Image, spriteRect *image.Rectangle
 		float64(spriteRect.Dx())/float64(constants.TileSize),
 		float64(spriteRect.Dy())/float64(constants.TileSize),
 	)
-	g.cam.RenderOpts(screen,
+	g.cam.Render(screen,
 		g.shadowImg,
 		float64(spriteRect.Min.X+spriteRect.Dx()/2-g.shadowImg.Bounds().Dx()/2),
 		float64(spriteRect.Min.Y+spriteRect.Dy()-g.shadowImg.Bounds().Dy()/2),
@@ -139,7 +139,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		}
 	})
 	for _, r := range renderers {
-		g.cam.RenderOpts(
+		g.cam.Render(
 			screen,
 			r.Image(),
 			float64(r.Rect().Min.X),
@@ -211,6 +211,7 @@ func (g *GameScene) FirstLoad() {
 		240,
 		mapWidth,
 		mapHeight,
+		g.gameState,
 	)
 
 	colliders := make([]*image.Rectangle, 0)
