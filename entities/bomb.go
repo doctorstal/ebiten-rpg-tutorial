@@ -66,6 +66,9 @@ func (b *Bomb) DoDamage() {
 	b.drawOpts.GeoM.Translate(-16, -16)
 	b.drawOpts.GeoM.Rotate( 2 * math.Pi/float64(1+rand.Intn(4)))
 	b.drawOpts.GeoM.Translate(16, 16)
+	sound := b.loader.LoadAudio(resources.SoundExplosion).Player
+	sound.Rewind()
+	sound.Play()
 }
 
 // GetAmtDamage implements AttackItem.

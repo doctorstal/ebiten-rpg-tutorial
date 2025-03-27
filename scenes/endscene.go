@@ -1,14 +1,19 @@
 package scenes
 
 import (
+	"rpg-tutorial/resources"
+
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	resource "github.com/quasilyte/ebitengine-resource"
 )
 
 type EndScene struct {
 	victory      bool
 	sceneOverlay *SceneOvelay
+	loader       *resource.Loader
 }
 
 // Draw implements Scene.
@@ -33,6 +38,14 @@ func (e *EndScene) IsLoaded() bool {
 }
 
 func (e *EndScene) OnEnter() {
+	var sound *audio.Player
+	if !e.victory {
+		sound = e.loader.LoadAudio(resources.SoundLost).Player
+	} else {
+		sound = e.loader.LoadAudio(resources.SoundWon).Player
+	}
+	sound.Rewind()
+	sound.Play()
 }
 
 func (e *EndScene) OnExit() {
@@ -54,9 +67,10 @@ func (e *EndScene) Update() SceneId {
 	}
 }
 
-func NewEndScene(gameScene Scene, victory bool) Scene {
+func NewEndScene(gameScene Scene, loader *resource.Loader, victory bool) Scene {
 	return &EndScene{
 		victory:      victory,
 		sceneOverlay: NewSceneOverlay(gameScene),
+		loader:       loader,
 	}
 }

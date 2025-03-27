@@ -59,6 +59,9 @@ func NewEnergyBall(loader *resource.Loader, x, y float64, dmg uint, dir int, spe
 	opts.GeoM.Translate(-constants.TileSize*0.5, -constants.TileSize*0.5)
 	opts.GeoM.Rotate(float64(2+dir) * 0.5 * math.Pi)
 	opts.GeoM.Translate(constants.TileSize*0.5, constants.TileSize*0.5)
+	sound := loader.LoadAudio(resources.SoundFireball).Player
+	sound.Rewind()
+	sound.Play()
 	return &EnergyBall{
 		Sprite: &Sprite{
 			X:           x,

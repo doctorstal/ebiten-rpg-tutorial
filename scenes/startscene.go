@@ -107,6 +107,9 @@ func newButtonWithImage(loader *resource.Loader, spriteId resource.ImageID, call
 			Idle: buttonIcon,
 		}),
 	)
+	menuSound2 := loader.LoadAudio(resources.SoundMenu2).Player
+	menuSound1 := loader.LoadAudio(resources.SoundMenu1).Player
+
 	// construct a pressable button
 	button := widget.NewButton(
 		// specify the images to use
@@ -114,9 +117,19 @@ func newButtonWithImage(loader *resource.Loader, spriteId resource.ImageID, call
 
 		// add a handler that reacts to clicking the button
 		widget.ButtonOpts.ClickedHandler(func(args *widget.ButtonClickedEventArgs) {
+			menuSound1.Rewind()
+			menuSound1.Play()
 			callback()
 		}),
+		widget.ButtonOpts.CursorEnteredHandler(func(args *widget.ButtonHoverEventArgs) {
+			menuSound2.Rewind()
+			menuSound2.Play()
+		}),
 	)
+	button.GetWidget().FocusEvent.AddHandler(func(args any) {
+			menuSound2.Rewind()
+			menuSound2.Play()
+	})
 	buttonStackedLayout.AddChild(button)
 	// Put an image on top of the button, it will be centered.
 	// If your image doesn't fit the button and there is no Y stretching support,

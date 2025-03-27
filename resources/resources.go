@@ -30,6 +30,17 @@ const (
 	UiPanelBg
 )
 
+const (
+	SoundMenu1 resource.AudioID = iota
+	SoundMenu2
+	SoundExplosion
+	SoundFireball
+	SoundRockSmash
+
+	SoundLost
+	SoundWon
+)
+
 func NewResourceLoader(fs embed.FS, audioContext *audio.Context) *resource.Loader {
 	l := resource.NewLoader(audioContext)
 	l.OpenAssetFunc = func(path string) io.ReadCloser {
@@ -59,6 +70,16 @@ func NewResourceLoader(fs embed.FS, audioContext *audio.Context) *resource.Loade
 		UiBtnHover:   {Path: "assets/images/ui/button_hover.png"},
 		UiBtnPressed: {Path: "assets/images/ui/button_pressed.png"},
 		UiPanelBg:    {Path: "assets/images/ui/nine_path_panel.png"},
+	})
+
+	l.AudioRegistry.Assign(map[resource.AudioID]resource.AudioInfo{
+		SoundMenu1:     {Path: "assets/sounds/ui/Menu1.wav"},
+		SoundMenu2:     {Path: "assets/sounds/ui/Menu2.wav"},
+		SoundExplosion: {Path: "assets/sounds/game/Explosion.wav"},
+		SoundRockSmash: {Path: "assets/sounds/game/rock_smash.wav"},
+		SoundFireball:  {Path: "assets/sounds/game/Fireball.wav"},
+		SoundLost:      {Path: "assets/sounds/ui/GameOver2.wav"},
+		SoundWon:       {Path: "assets/sounds/ui/Success3.wav"},
 	})
 
 	return l

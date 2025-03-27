@@ -63,6 +63,9 @@ func (b *Rock) HitRect() *image.Rectangle {
 // DoDamage implements AttackItem.
 func (b *Rock) DoDamage() {
 	b.state = Dead
+	expSound := b.loader.LoadAudio(resources.SoundRockSmash).Player
+	expSound.Rewind()
+	expSound.Play()
 }
 
 // GetAmtDamage implements AttackItem.
