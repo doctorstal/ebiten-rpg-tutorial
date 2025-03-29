@@ -21,9 +21,13 @@ type RoomState struct {
 }
 
 func (r *RoomState) positionPlayer(from string) {
-	if doorRect, ok := r.TiledMap.Doors()[from]; ok {
-		r.Player.X = float64(doorRect.Min.X)
-		r.Player.Y = float64(doorRect.Max.Y)
+	if door, ok := r.TiledMap.Doors()[from]; ok {
+		r.Player.X = float64(door.Rect.Min.X)
+		if door.Direction == "up" {
+			r.Player.Y = float64(door.Rect.Min.Y) - r.Player.Height
+		} else {
+			r.Player.Y = float64(door.Rect.Max.Y)
+		}
 	} else {
 		r.Player.X = 0
 		r.Player.Y = 0

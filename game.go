@@ -13,7 +13,7 @@ import (
 type Game struct {
 	sceneMap      map[scenes.SceneId]scenes.Scene
 	activeSceneId scenes.SceneId
-	gameState *state.GlobalGameState
+	gameState     *state.GlobalGameState
 }
 
 func NewGame(loader *resource.Loader) *Game {
@@ -28,21 +28,22 @@ func NewGame(loader *resource.Loader) *Game {
 	gameScene := scenes.NewGameScene(gameState, loader)
 	game := &Game{
 		sceneMap: map[scenes.SceneId]scenes.Scene{
-			scenes.StartSceneId: startScene,
-			scenes.GameSceneId:  gameScene,
-			scenes.PauseSceneId: scenes.NewPauseScene(gameScene),
-			scenes.WonSceneId:   scenes.NewEndScene(gameScene, loader, true),
-			scenes.LostSceneId:  scenes.NewEndScene(gameScene, loader, false),
+			scenes.StartSceneId:      startScene,
+			scenes.GameSceneId:       gameScene,
+			scenes.PauseSceneId:      scenes.NewPauseScene(gameScene),
+			scenes.TransitionSceneId: scenes.NewTransitionScene(gameScene),
+			scenes.WonSceneId:        scenes.NewEndScene(gameScene, loader, true),
+			scenes.LostSceneId:       scenes.NewEndScene(gameScene, loader, false),
 		},
 		activeSceneId: scenes.StartSceneId,
-		gameState: gameState,
+		gameState:     gameState,
 	}
 
 	return game
 }
 
 func (g *Game) Update() error {
-	if inpututil.IsKeyJustPressed(ebiten.KeyD){
+	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
 		g.gameState.DebugMode = !g.gameState.DebugMode
 	}
 	nextSceneId := g.sceneMap[g.activeSceneId].Update()

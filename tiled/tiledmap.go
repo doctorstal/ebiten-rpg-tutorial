@@ -9,12 +9,17 @@ import (
 	"github.com/lafriks/go-tiled/render"
 )
 
+type Door struct {
+	Rect      *image.Rectangle
+	Direction string
+}
+
 type TiledMap struct {
 	groundImg   *image.NRGBA
 	objectsImg  *image.NRGBA
 	gameMap     *tiled.Map
 	objectRects []*image.Rectangle
-	doors       map[string]*image.Rectangle
+	doors       map[string]*Door
 }
 
 func NewTiledMap(path string) (*TiledMap, error) {
@@ -49,7 +54,7 @@ func NewTiledMap(path string) (*TiledMap, error) {
 
 	objImg := renderer.Result
 
-	doors := make(map[string]*image.Rectangle)
+	doors := make(map[string]*Door)
 	rects := make([]*image.Rectangle, 0)
 	for _, og := range gameMap.ObjectGroups {
 		for _, o := range og.Objects {
@@ -60,7 +65,10 @@ func NewTiledMap(path string) (*TiledMap, error) {
 					int(o.X+o.Width),
 					int(o.Y+o.Height),
 				)
-				doors[o.Properties.GetString("goto")] = &rect
+				doors[o.Properties.GetString("goto")] = &Door{
+					Rect:      &rect,
+					Direction: o.Properties.GetString("direction"),
+				}
 			} else {
 				rect := image.Rect(
 					int(o.X),
@@ -96,7 +104,7 @@ func (t *TiledMap) ObjectsImage(rect image.Rectangle) *ebiten.Image {
 func (t *TiledMap) ObjectRects() []*image.Rectangle {
 	return t.objectRects
 }
-func (t *TiledMap) Doors() map[string]*image.Rectangle {
+func (t *TiledMap) Doors() map[string]*Door {
 	return t.doors
 }
 

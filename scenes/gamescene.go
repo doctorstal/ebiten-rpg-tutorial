@@ -132,7 +132,8 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d, Enemies Left: %d \n", g.roomState.Player.CombatComponent.Health(), len(g.roomState.Enemies)))
 	g.ingameUi.Draw(screen)
 	if g.gameState.DebugMode {
-		for _, c := range g.roomState.TiledMap.Doors() {
+		for _, d := range g.roomState.TiledMap.Doors() {
+			c := d.Rect
 			x := float64(c.Min.X)
 			y := float64(c.Min.Y)
 
@@ -158,7 +159,7 @@ func (g *GameScene) FirstLoad() {
 	player := entities.NewPlayer(g.loader, g.gameState.SelectedHero, 360.0, 100.0)
 
 	g.world = world.NewWorldState(g.loader, "second.tmx")
-	g.roomState = g.world.LoadRoom("first.tmx", player)
+	g.roomState = g.world.LoadRoom("home.tmx", player)
 
 	mapWidth := g.roomState.TiledMap.Width()
 	mapHeight := g.roomState.TiledMap.Height()
@@ -216,12 +217,11 @@ func (g *GameScene) Update() SceneId {
 
 	// Go through doors
 	for name, d := range g.roomState.TiledMap.Doors() {
-		if d.Overlaps(g.roomState.Player.Rect().Add(image.Point{int(g.roomState.Player.Dx), int(g.roomState.Player.Dy)})) {
+		if d.Rect.Overlaps(g.roomState.Player.Rect().Add(image.Point{int(g.roomState.Player.Dx), int(g.roomState.Player.Dy)})) {
 			g.roomState = g.world.LoadRoom(name, g.roomState.Player)
 			g.cam.UpdateRoomSize(g.roomState.TiledMap.Width(), g.roomState.TiledMap.Height())
 			g.cam.GoToTarget(g.roomState.Player.X, g.roomState.Player.Y)
-			return PauseSceneId
-			// return TransitionSceneId
+			return TransitionSceneId
 		}
 	}
 

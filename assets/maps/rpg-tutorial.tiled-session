@@ -56,11 +56,19 @@
                 5,
                 6
             ],
-            "scale": 3.9489,
+            "scale": 1.5833,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 444.00934756521195,
+                "y": 271.26886881829097
+            }
+        },
+        "home.tmx": {
+            "scale": 2.7490624999999995,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 400.8711286687432,
-                "y": 194.8643926156651
+                "x": 161.87336592020011,
+                "y": 134.4094577696942
             }
         },
         "second.tmx": {
@@ -68,12 +76,15 @@
                 2,
                 3
             ],
-            "scale": 4.1968,
+            "scale": 2.4981,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 114.1345787266489,
-                "y": 148.56557377049182
+                "x": 144.50982746887632,
+                "y": 159.12093190825027
             }
+        },
+        "tilesets/InteriorFloor.tsx": {
+            "dynamicWrapping": false
         },
         "tilesets/TilesetFloor.tsj": {
             "dynamicWrapping": false,
@@ -103,7 +114,7 @@
             "scaleInEditor": 3.34
         }
     },
-    "last.imagePath": "/Users/oleksiistadnyk/edu/rpg-tutorial/assets/images/buildings",
+    "last.imagePath": "/Users/oleksiistadnyk/edu/rpg-tutorial/assets/images",
     "map.height": 15,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
@@ -116,7 +127,7 @@
         "second.tmx"
     ],
     "project": "rpg-tutorial.tiled-project",
-    "property.type": "file",
+    "property.type": "string",
     "recentFiles": [
         "second.tmx",
         "tilesets/buildings_x.tsx",
@@ -135,5 +146,5 @@
         "height": 16,
         "width": 16
     },
-    "tileset.type": 1
+    "tileset.type": 0
 }

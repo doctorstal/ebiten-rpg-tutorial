@@ -127,7 +127,7 @@
  <objectgroup id="6" name="game">
   <object id="49" type="door" x="370.905" y="162.366" width="11.8168" height="13.0829">
    <properties>
-    <property name="goto" type="file" value="second.tmx"/>
+    <property name="goto" type="file" value="home.tmx"/>
    </properties>
   </object>
  </objectgroup>
