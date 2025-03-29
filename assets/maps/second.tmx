@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="8">
  <tileset firstgid="1" source="tilesets/TilesetFloor.tsx"/>
- <layer id="1" name="ground" width="20" height="15">
+ <tileset firstgid="573" source="tilesets/buildings_x.tsx"/>
+ <layer id="1" name="ground" width="20" height="15" locked="1">
   <data encoding="csv">
 268,268,245,245,267,269,246,268,267,269,245,267,266,245,246,267,245,268,267,266,
 266,2147483937,536871199,536871199,536871199,536871199,536871199,536871199,289,269,268,268,245,246,266,245,245,267,268,266,
@@ -20,4 +21,14 @@
 268,268,268,266,246,269,266,246,266,267,268,245,246,246,267,266,268,268,246,268
 </data>
  </layer>
+ <objectgroup id="3" name="buildings">
+  <object id="1" gid="574" x="17.8352" y="198.514" width="64" height="49"/>
+ </objectgroup>
+ <objectgroup id="2" name="game">
+  <object id="7" type="door" x="34.3119" y="183.473" width="14.5349" height="15.0114">
+   <properties>
+    <property name="goto" type="file" value="first.tmx"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

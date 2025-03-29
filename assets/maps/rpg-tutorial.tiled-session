@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "first.tmj",
+    "activeFile": "first.tmx",
     "expandedProjectPaths": [
         ".",
         "tilesets"
@@ -32,34 +32,47 @@
         "/Users/oleksiistadnyk/edu/go-tiled-rotation/tilesets/TilesetFloor.tsx": {
             "scaleInDock": 1
         },
+        "/Users/oleksiistadnyk/edu/go-tiled-rotation/transform-test.tmx": {
+            "scale": 2.7490624999999995,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 161.5096055473457,
+                "y": 134.77321814254861
+            }
+        },
         "first.tmj": {
             "expandedObjectLayers": [
-                5
+                7
             ],
             "scale": 1.0197,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 311.8564283612827,
-                "y": 245.66048837893499
+                "x": 458.95851721094436,
+                "y": 513.3862900853192
             }
         },
         "first.tmx": {
             "expandedObjectLayers": [
-                5
+                5,
+                6
             ],
-            "scale": 1.5905,
-            "selectedLayer": 1,
+            "scale": 3.9489,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 430.05344231373783,
-                "y": 292.6752593524049
+                "x": 400.8711286687432,
+                "y": 194.8643926156651
             }
         },
         "second.tmx": {
-            "scale": 2.7490624999999995,
-            "selectedLayer": 0,
+            "expandedObjectLayers": [
+                2,
+                3
+            ],
+            "scale": 4.1968,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 160.0545640559282,
-                "y": 119.85904285551894
+                "x": 114.1345787266489,
+                "y": 148.56557377049182
             }
         },
         "tilesets/TilesetFloor.tsj": {
@@ -70,7 +83,7 @@
         "tilesets/TilesetFloor.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
-            "scaleInEditor": 3.3458
+            "scaleInEditor": 3.34
         },
         "tilesets/TilesetHouse.tsx": {
             "scaleInDock": 1,
@@ -83,6 +96,11 @@
         },
         "tilesets/buildings.tsx": {
             "dynamicWrapping": true
+        },
+        "tilesets/buildings_x.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 3.34
         }
     },
     "last.imagePath": "/Users/oleksiistadnyk/edu/rpg-tutorial/assets/images/buildings",
@@ -92,20 +110,25 @@
     "map.tileWidth": 16,
     "map.width": 20,
     "openFiles": [
-        "first.tmj",
-        "tilesets/TilesetFloor.tsj",
-        "tilesets/buildings.tsj"
+        "first.tmx",
+        "tilesets/TilesetFloor.tsx",
+        "tilesets/buildings_x.tsx",
+        "second.tmx"
     ],
     "project": "rpg-tutorial.tiled-project",
+    "property.type": "file",
     "recentFiles": [
+        "second.tmx",
+        "tilesets/buildings_x.tsx",
+        "tilesets/TilesetFloor.tsx",
+        "first.tmx",
+        "first.tmj",
+        "/Users/oleksiistadnyk/edu/go-tiled-rotation/transform-test.tmx",
         "/Users/oleksiistadnyk/edu/go-tiled-rotation/second.tmx",
         "/Users/oleksiistadnyk/Downloads/rotationtest.tmx",
         "tilesets/buildings.tsj",
         "tilesets/TilesetFloor.tsj",
-        "first.tmj",
-        "tilesets/TilesetHouse.tsx",
-        "first.tmx",
-        "tilesets/TilesetFloor.tsx"
+        "tilesets/TilesetHouse.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

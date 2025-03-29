@@ -11,21 +11,33 @@ import (
 )
 
 type Camera struct {
-	X, Y                                                   float64
-	screenWidth, screenHeight, tilemapWidth, tilemapHeight float64
-	gameState                                              *state.GlobalGameState
+	X, Y                                             float64
+	screenWidth, screenHeight, roomWidth, roomHeight float64
+	gameState                                        *state.GlobalGameState
 }
 
-func NewCamera(screenWidth, screenHeight, tilemapWith, tilemapHeight float64, gameState *state.GlobalGameState) *Camera {
+func NewCamera(screenWidth, screenHeight, roomWidth, roomHeight float64, gameState *state.GlobalGameState) *Camera {
 	return &Camera{
-		X:             0,
-		Y:             0,
-		screenWidth:   screenWidth,
-		screenHeight:  screenHeight,
-		tilemapWidth:  tilemapWith,
-		tilemapHeight: tilemapHeight,
-		gameState: gameState,
+		X:            0,
+		Y:            0,
+		screenWidth:  screenWidth,
+		screenHeight: screenHeight,
+		roomWidth:    roomWidth,
+		roomHeight:   roomHeight,
+		gameState:    gameState,
 	}
+}
+
+func (c *Camera) UpdateRoomSize(width, height float64) {
+	c.roomWidth = width
+	c.roomHeight = height
+}
+
+func (c *Camera) GoToTarget(targetX, targetY float64) {
+	c.X = -targetX + c.screenWidth/2
+	c.Y = -targetY + c.screenHeight/2
+	c.X = math.Max(math.Min(c.X, 0), c.screenWidth-c.roomWidth)
+	c.Y = math.Max(math.Min(c.Y, 0), c.screenHeight-c.roomHeight)
 }
 
 func (c *Camera) FollowTarget(targetX, targetY float64) {
@@ -44,8 +56,8 @@ func (c *Camera) FollowTarget(targetX, targetY float64) {
 		c.Y += math.Copysign(1.0, ty)
 	}
 
-	c.X = math.Max(math.Min(c.X, 0), c.screenWidth-c.tilemapWidth)
-	c.Y = math.Max(math.Min(c.Y, 0), c.screenHeight-c.tilemapHeight)
+	c.X = math.Max(math.Min(c.X, 0), c.screenWidth-c.roomWidth)
+	c.Y = math.Max(math.Min(c.Y, 0), c.screenHeight-c.roomHeight)
 }
 
 func (c *Camera) Render(screen *ebiten.Image, subimage *ebiten.Image, x, y float64, opts *ebiten.DrawImageOptions) {

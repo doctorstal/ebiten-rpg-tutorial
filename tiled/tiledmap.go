@@ -10,9 +10,11 @@ import (
 )
 
 type TiledMap struct {
-	groundImg  *image.NRGBA
-	objectsImg *image.NRGBA
-	gameMap    *tiled.Map
+	groundImg   *image.NRGBA
+	objectsImg  *image.NRGBA
+	gameMap     *tiled.Map
+	objectRects []*image.Rectangle
+	doors       map[string]*image.Rectangle
 }
 
 func NewTiledMap(path string) (*TiledMap, error) {
@@ -47,10 +49,37 @@ func NewTiledMap(path string) (*TiledMap, error) {
 
 	objImg := renderer.Result
 
+	doors := make(map[string]*image.Rectangle)
+	rects := make([]*image.Rectangle, 0)
+	for _, og := range gameMap.ObjectGroups {
+		for _, o := range og.Objects {
+			if o.Type == "door" {
+				rect := image.Rect(
+					int(o.X),
+					int(o.Y),
+					int(o.X+o.Width),
+					int(o.Y+o.Height),
+				)
+				doors[o.Properties.GetString("goto")] = &rect
+			} else {
+				rect := image.Rect(
+					int(o.X),
+					int(o.Y-o.Height),
+					int(o.X+o.Width),
+					int(o.Y),
+				)
+				rects = append(rects, &rect)
+
+			}
+		}
+	}
+
 	return &TiledMap{
-		groundImg:  gImg,
-		objectsImg: objImg,
-		gameMap:    gameMap,
+		groundImg:   gImg,
+		objectsImg:  objImg,
+		gameMap:     gameMap,
+		objectRects: rects,
+		doors:       doors,
 	}, err
 }
 
@@ -65,19 +94,10 @@ func (t *TiledMap) ObjectsImage(rect image.Rectangle) *ebiten.Image {
 }
 
 func (t *TiledMap) ObjectRects() []*image.Rectangle {
-	rects := make([]*image.Rectangle, 0)
-	for _, og := range t.gameMap.ObjectGroups {
-		for _, o := range og.Objects {
-			rect := image.Rect(
-				int(o.X),
-				int(o.Y-o.Height),
-				int(o.X+o.Width),
-				int(o.Y),
-			)
-			rects = append(rects, &rect)
-		}
-	}
-	return rects
+	return t.objectRects
+}
+func (t *TiledMap) Doors() map[string]*image.Rectangle {
+	return t.doors
 }
 
 func (t *TiledMap) Width() float64 {
