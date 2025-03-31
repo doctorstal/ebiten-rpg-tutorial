@@ -57,15 +57,19 @@
                 6
             ],
             "scale": 1.5833,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 444.00934756521195,
-                "y": 271.26886881829097
+                "x": 321.48045222004674,
+                "y": 279.4795679909051
             }
         },
         "home.tmx": {
+            "expandedObjectLayers": [
+                2,
+                4
+            ],
             "scale": 2.7490624999999995,
-            "selectedLayer": 2,
+            "selectedLayer": 3,
             "viewCenter": {
                 "x": 161.87336592020011,
                 "y": 134.4094577696942
@@ -77,7 +81,7 @@
                 3
             ],
             "scale": 2.4981,
-            "selectedLayer": 2,
+            "selectedLayer": 1,
             "viewCenter": {
                 "x": 144.50982746887632,
                 "y": 159.12093190825027
@@ -112,6 +116,9 @@
             "dynamicWrapping": true,
             "scaleInDock": 1,
             "scaleInEditor": 3.34
+        },
+        "tilesets/skeleton.tsx": {
+            "dynamicWrapping": false
         }
     },
     "last.imagePath": "/Users/oleksiistadnyk/edu/rpg-tutorial/assets/images",

@@ -10,5 +10,69 @@
     "properties": [
     ],
     "propertyTypes": [
+        {
+            "id": 3,
+            "name": "Direction",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "down",
+                "left",
+                "right",
+                "up"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 2,
+            "members": [
+                {
+                    "name": "direction",
+                    "propertyType": "Direction",
+                    "type": "string",
+                    "value": "down"
+                },
+                {
+                    "name": "goto",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "Door",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object",
+                "tile",
+                "project"
+            ]
+        },
+        {
+            "color": "#ffb36356",
+            "drawFill": true,
+            "id": 1,
+            "members": [
+                {
+                    "name": "follows_player",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "kind",
+                    "type": "string",
+                    "value": ""
+                }
+            ],
+            "name": "Enemy",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object",
+                "tile",
+                "project"
+            ]
+        }
     ]
 }

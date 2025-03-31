@@ -44,21 +44,12 @@ func NewRoom(mapFile string, player *entities.Player, loader *resource.Loader) *
 	room := &RoomState{}
 
 	room.Player = player
-
-	room.Enemies = []*entities.Enemy{
-		entities.NewEnemy(50.0, 50.0, false, loader),
-		entities.NewEnemy(75.0, 75.0, false, loader),
-		entities.NewEnemy(150.0, 75.0, false, loader),
-		// entities.NewEnemy(150.0, 75.0, true, loader),
-		// entities.NewEnemy(150.0, 75.0, true, loader),
-		// entities.NewEnemy(150.0, 75.0, false, loader),
-		// entities.NewEnemy(150.0, 75.0, true, loader),
-		// entities.NewEnemy(150.0, 75.0, true, loader),
-		// entities.NewEnemy(150.0, 75.0, true, loader),
-		// entities.NewEnemy(150.0, 75.0, true, loader),
-		// entities.NewEnemy(150.0, 75.0, true, loader),
-		// entities.NewEnemy(150.0, 75.0, true, loader),
+	
+	room.Enemies = make([]*entities.Enemy, len(tiledMap.Enemies()))
+	for i, e := range tiledMap.Enemies() {
+		room.Enemies[i]= entities.NewEnemy(float64(e.Rect.Min.X), float64(e.Rect.Min.Y), e.FollorsPlayer, loader)
 	}
+
 	room.Potions = []*entities.Potion{
 		entities.NewPotion(210.0, 100.0, loader),
 	}

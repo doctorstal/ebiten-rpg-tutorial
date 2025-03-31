@@ -14,12 +14,19 @@ type Door struct {
 	Direction string
 }
 
+type Enemy struct {
+	Rect          *image.Rectangle
+	Kind          string
+	FollorsPlayer bool
+}
+
 type TiledMap struct {
 	groundImg   *image.NRGBA
 	objectsImg  *image.NRGBA
 	gameMap     *tiled.Map
 	objectRects []*image.Rectangle
 	doors       map[string]*Door
+	enemies     []*Enemy
 }
 
 func NewTiledMap(path string) (*TiledMap, error) {
@@ -46,19 +53,13 @@ func NewTiledMap(path string) (*TiledMap, error) {
 	gImg := renderer.Result
 	renderer.Clear()
 
-	err = renderer.RenderVisibleObjectGroups()
-	if err != nil {
-		fmt.Printf("object group unsupported for rendering: %s", err.Error())
-		return nil, err
-	}
-
-	objImg := renderer.Result
-
 	doors := make(map[string]*Door)
+	enemies := make([]*Enemy, 0)
 	rects := make([]*image.Rectangle, 0)
 	for _, og := range gameMap.ObjectGroups {
 		for _, o := range og.Objects {
-			if o.Type == "door" {
+			switch o.Type {
+			case "Door":
 				rect := image.Rect(
 					int(o.X),
 					int(o.Y),
@@ -69,7 +70,20 @@ func NewTiledMap(path string) (*TiledMap, error) {
 					Rect:      &rect,
 					Direction: o.Properties.GetString("direction"),
 				}
-			} else {
+			case "Enemy":
+				rect := image.Rect(
+					int(o.X),
+					int(o.Y-o.Height),
+					int(o.X+o.Width),
+					int(o.Y),
+				)
+				enemies = append(enemies, &Enemy{
+					Rect:          &rect,
+					Kind:          o.Properties.GetString("kind"),
+					FollorsPlayer: o.Properties.GetBool("follows_player"),
+				})
+				o.Visible = false
+			default:
 				rect := image.Rect(
 					int(o.X),
 					int(o.Y-o.Height),
@@ -82,12 +96,20 @@ func NewTiledMap(path string) (*TiledMap, error) {
 		}
 	}
 
+	err = renderer.RenderVisibleObjectGroups()
+	if err != nil {
+		fmt.Printf("object group unsupported for rendering: %s", err.Error())
+		return nil, err
+	}
+	objImg := renderer.Result
+
 	return &TiledMap{
 		groundImg:   gImg,
 		objectsImg:  objImg,
 		gameMap:     gameMap,
 		objectRects: rects,
 		doors:       doors,
+		enemies:     enemies,
 	}, err
 }
 
@@ -106,6 +128,10 @@ func (t *TiledMap) ObjectRects() []*image.Rectangle {
 }
 func (t *TiledMap) Doors() map[string]*Door {
 	return t.doors
+}
+
+func (t *TiledMap) Enemies() []*Enemy {
+	return t.enemies
 }
 
 func (t *TiledMap) Width() float64 {

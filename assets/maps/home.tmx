@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="14">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="27">
  <tileset firstgid="1" source="tilesets/InteriorFloor.tsx"/>
  <tileset firstgid="375" source="tilesets/Interior.tsx"/>
  <tileset firstgid="695" source="tilesets/buildings_x.tsx"/>
+ <tileset firstgid="699" source="tilesets/skeleton.tsx"/>
  <layer id="1" name="floor" width="20" height="15">
   <data encoding="csv">
 24,24,24,24,24,24,24,24,25,23,25,23,24,24,24,24,24,24,24,24,
@@ -41,19 +42,34 @@
 375,375,423,423,423,423,423,375,440,411,394,445,375,423,423,423,423,375,375,423
 </data>
  </layer>
- <objectgroup id="4" name="colliders">
+ <objectgroup id="4" name="colliders" locked="1">
   <object id="13" gid="698" x="195.526" y="144.044" width="28" height="32"/>
  </objectgroup>
- <objectgroup id="2" name="doors">
-  <object id="3" type="door" x="141.867" y="0.727521" width="33.8297" height="12.0041">
+ <objectgroup id="2" name="game">
+  <object id="3" type="Door" x="141.867" y="0.727521" width="33.8297" height="12.0041">
    <properties>
     <property name="goto" type="file" value="second.tmx"/>
    </properties>
   </object>
-  <object id="8" type="door" x="142.958" y="225.168" width="34.5572" height="13.8229">
+  <object id="8" type="Door" x="142.958" y="225.168" width="34.5572" height="13.8229">
    <properties>
-    <property name="direction" value="up"/>
+    <property name="direction" propertytype="Direction" value="up"/>
     <property name="goto" value="first.tmx"/>
+   </properties>
+  </object>
+  <object id="24" type="Enemy" gid="699" x="47.2916" y="63.6553" width="16" height="16">
+   <properties>
+    <property name="kind" value="skeleton"/>
+   </properties>
+  </object>
+  <object id="25" type="Enemy" gid="699" x="256.09" y="63.2916" width="16" height="16">
+   <properties>
+    <property name="kind" value="skeleton"/>
+   </properties>
+  </object>
+  <object id="26" type="Enemy" gid="699" x="255.726" y="206.249" width="16" height="16">
+   <properties>
+    <property name="kind" value="skeleton"/>
    </properties>
   </object>
  </objectgroup>

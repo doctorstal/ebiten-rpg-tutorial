@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="10">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="14">
  <tileset firstgid="1" source="tilesets/TilesetFloor.tsx"/>
  <tileset firstgid="573" source="tilesets/buildings_x.tsx"/>
+ <tileset firstgid="577" source="tilesets/skeleton.tsx"/>
  <layer id="1" name="ground" width="20" height="15" locked="1">
   <data encoding="csv">
 268,268,245,245,267,269,246,268,267,269,245,267,266,245,246,267,245,268,267,266,
@@ -27,9 +28,29 @@
   <object id="9" gid="576" x="283.826" y="231.764" width="28" height="32"/>
  </objectgroup>
  <objectgroup id="2" name="game">
-  <object id="7" type="door" x="34.3119" y="183.473" width="14.5349" height="15.0114">
+  <object id="7" type="Door" x="34.3119" y="183.473" width="14.5349" height="15.0114">
    <properties>
     <property name="goto" type="file" value="home.tmx"/>
+   </properties>
+  </object>
+  <object id="10" type="Enemy" gid="577" x="234.985" y="105.674" width="16" height="16">
+   <properties>
+    <property name="follows_player" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="11" type="Enemy" gid="577" x="186.148" y="58.8386" width="16" height="16">
+   <properties>
+    <property name="follows_player" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="12" type="Enemy" gid="577" x="285.023" y="42.4262" width="16" height="16">
+   <properties>
+    <property name="follows_player" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="13" type="Enemy" gid="577" x="223.376" y="27.2146" width="16" height="16">
+   <properties>
+    <property name="follows_player" type="bool" value="true"/>
    </properties>
   </object>
  </objectgroup>
