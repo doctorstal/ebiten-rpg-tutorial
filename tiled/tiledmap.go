@@ -19,6 +19,10 @@ type Enemy struct {
 	Kind          string
 	FollorsPlayer bool
 }
+type Item struct {
+	Rect *image.Rectangle
+	Kind string
+}
 
 type TiledMap struct {
 	groundImg   *image.NRGBA
@@ -27,6 +31,7 @@ type TiledMap struct {
 	objectRects []*image.Rectangle
 	doors       map[string]*Door
 	enemies     []*Enemy
+	items       []*Item
 }
 
 func NewTiledMap(path string) (*TiledMap, error) {
@@ -55,12 +60,19 @@ func NewTiledMap(path string) (*TiledMap, error) {
 
 	doors := make(map[string]*Door)
 	enemies := make([]*Enemy, 0)
+	items := make([]*Item, 0)
 	rects := make([]*image.Rectangle, 0)
 	for _, og := range gameMap.ObjectGroups {
 		for _, o := range og.Objects {
+			rect := image.Rect(
+				int(o.X),
+				int(o.Y-o.Height),
+				int(o.X+o.Width),
+				int(o.Y),
+			)
 			switch o.Type {
 			case "Door":
-				rect := image.Rect(
+				rect = image.Rect(
 					int(o.X),
 					int(o.Y),
 					int(o.X+o.Width),
@@ -71,25 +83,20 @@ func NewTiledMap(path string) (*TiledMap, error) {
 					Direction: o.Properties.GetString("direction"),
 				}
 			case "Enemy":
-				rect := image.Rect(
-					int(o.X),
-					int(o.Y-o.Height),
-					int(o.X+o.Width),
-					int(o.Y),
-				)
 				enemies = append(enemies, &Enemy{
 					Rect:          &rect,
 					Kind:          o.Properties.GetString("kind"),
 					FollorsPlayer: o.Properties.GetBool("follows_player"),
 				})
 				o.Visible = false
+			case "Item":
+				items = append(items, &Item{
+					Rect: &rect,
+					Kind: o.Properties.GetString("kind"),
+				})
+				o.Visible = false
+
 			default:
-				rect := image.Rect(
-					int(o.X),
-					int(o.Y-o.Height),
-					int(o.X+o.Width),
-					int(o.Y),
-				)
 				rects = append(rects, &rect)
 
 			}
@@ -110,6 +117,7 @@ func NewTiledMap(path string) (*TiledMap, error) {
 		objectRects: rects,
 		doors:       doors,
 		enemies:     enemies,
+		items:       items,
 	}, err
 }
 
@@ -132,6 +140,9 @@ func (t *TiledMap) Doors() map[string]*Door {
 
 func (t *TiledMap) Enemies() []*Enemy {
 	return t.enemies
+}
+func (t *TiledMap) Items() []*Item {
+	return t.items
 }
 
 func (t *TiledMap) Width() float64 {

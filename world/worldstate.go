@@ -4,6 +4,7 @@ import (
 	"image"
 	"log"
 	"path"
+
 	"github.com/doctorstal/ebiten-rpg-tutorial/entities"
 	"github.com/doctorstal/ebiten-rpg-tutorial/tiled"
 
@@ -18,7 +19,8 @@ type RoomState struct {
 	Potions          []*entities.Potion
 	TiledMap         *tiled.TiledMap
 	Colliders        []*image.Rectangle
-	AttackItems []entities.AttackItem}
+	AttackItems      []entities.AttackItem
+}
 
 func (r *RoomState) positionPlayer(from string) {
 	if door, ok := r.TiledMap.Doors()[from]; ok {
@@ -44,16 +46,18 @@ func NewRoom(mapFile string, player *entities.Player, loader *resource.Loader) *
 	room := &RoomState{}
 
 	room.Player = player
-	
+
 	room.Enemies = make([]*entities.Enemy, len(tiledMap.Enemies()))
 	for i, e := range tiledMap.Enemies() {
-		room.Enemies[i]= entities.NewEnemy(float64(e.Rect.Min.X), float64(e.Rect.Min.Y), e.FollorsPlayer, loader)
+		room.Enemies[i] = entities.NewEnemy(float64(e.Rect.Min.X), float64(e.Rect.Min.Y), e.FollorsPlayer, loader)
 	}
 
-	room.Potions = []*entities.Potion{
-		entities.NewPotion(210.0, 100.0, loader),
+	room.Potions = make([]*entities.Potion, 0)
+	for _, item := range tiledMap.Items() {
+		if item.Kind == "LifePotion" {
+			room.Potions = append(room.Potions, entities.NewPotion(float64(item.Rect.Min.X), float64(item.Rect.Min.Y), loader))
+		}
 	}
-
 	room.TiledMap = tiledMap
 	colliders := make([]*image.Rectangle, 0)
 
@@ -61,8 +65,7 @@ func NewRoom(mapFile string, player *entities.Player, loader *resource.Loader) *
 		colliders = append(colliders, objectRect)
 	}
 	room.Colliders = colliders
-			room.AttackItems = make([]entities.AttackItem, 0)
-
+	room.AttackItems = make([]entities.AttackItem, 0)
 
 	return room
 

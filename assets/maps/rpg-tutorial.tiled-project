@@ -73,6 +73,43 @@
                 "tile",
                 "project"
             ]
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 4,
+            "members": [
+                {
+                    "name": "kind",
+                    "propertyType": "ItemKind",
+                    "type": "string",
+                    "value": "Undefined"
+                }
+            ],
+            "name": "Item",
+            "type": "class",
+            "useAs": [
+                "property",
+                "map",
+                "layer",
+                "object",
+                "tile",
+                "tileset",
+                "wangcolor",
+                "wangset",
+                "project"
+            ]
+        },
+        {
+            "id": 6,
+            "name": "ItemKind",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "LifePotion",
+                "Undefined"
+            ],
+            "valuesAsFlags": false
         }
     ]
 }

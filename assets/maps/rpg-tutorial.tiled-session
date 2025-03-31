@@ -59,8 +59,8 @@
             "scale": 1.5833,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 321.48045222004674,
-                "y": 279.4795679909051
+                "x": 492.64195035684963,
+                "y": 139.89768205646433
             }
         },
         "home.tmx": {
@@ -75,6 +75,18 @@
                 "y": 134.4094577696942
             }
         },
+        "homej.tmj": {
+            "expandedObjectLayers": [
+                2,
+                4
+            ],
+            "scale": 2.7490624999999995,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 130.5899738547232,
+                "y": 93.30453563714906
+            }
+        },
         "second.tmx": {
             "expandedObjectLayers": [
                 2,
@@ -87,8 +99,14 @@
                 "y": 159.12093190825027
             }
         },
+        "tilesets/Interior.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 4.3072
+        },
         "tilesets/InteriorFloor.tsx": {
-            "dynamicWrapping": false
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 5.7311
         },
         "tilesets/TilesetFloor.tsj": {
             "dynamicWrapping": false,
@@ -117,13 +135,16 @@
             "scaleInDock": 1,
             "scaleInEditor": 3.34
         },
+        "tilesets/items.tsx": {
+            "dynamicWrapping": true
+        },
         "tilesets/skeleton.tsx": {
             "dynamicWrapping": false
         }
     },
     "last.imagePath": "/Users/oleksiistadnyk/edu/rpg-tutorial/assets/images",
     "map.height": 15,
-    "map.lastUsedFormat": "tmx",
+    "map.lastUsedFormat": "json",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "map.width": 20,
@@ -134,8 +155,11 @@
         "second.tmx"
     ],
     "project": "rpg-tutorial.tiled-project",
-    "property.type": "string",
+    "property.type": "ItemType",
     "recentFiles": [
+        "homej.tmj",
+        "tilesets/Interior.tsx",
+        "tilesets/InteriorFloor.tsx",
         "second.tmx",
         "tilesets/buildings_x.tsx",
         "tilesets/TilesetFloor.tsx",
@@ -144,14 +168,12 @@
         "/Users/oleksiistadnyk/edu/go-tiled-rotation/transform-test.tmx",
         "/Users/oleksiistadnyk/edu/go-tiled-rotation/second.tmx",
         "/Users/oleksiistadnyk/Downloads/rotationtest.tmx",
-        "tilesets/buildings.tsj",
-        "tilesets/TilesetFloor.tsj",
-        "tilesets/TilesetHouse.tsx"
+        "tilesets/buildings.tsj"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 16,
         "width": 16
     },
-    "tileset.type": 0
+    "tileset.type": 1
 }

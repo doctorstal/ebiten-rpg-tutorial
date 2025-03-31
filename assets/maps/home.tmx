@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="27">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="31">
  <tileset firstgid="1" source="tilesets/InteriorFloor.tsx"/>
  <tileset firstgid="375" source="tilesets/Interior.tsx"/>
  <tileset firstgid="695" source="tilesets/buildings_x.tsx"/>
  <tileset firstgid="699" source="tilesets/skeleton.tsx"/>
+ <tileset firstgid="727" source="tilesets/items.tsx"/>
  <layer id="1" name="floor" width="20" height="15">
   <data encoding="csv">
 24,24,24,24,24,24,24,24,25,23,25,23,24,24,24,24,24,24,24,24,
@@ -70,6 +71,16 @@
   <object id="26" type="Enemy" gid="699" x="255.726" y="206.249" width="16" height="16">
    <properties>
     <property name="kind" value="skeleton"/>
+   </properties>
+  </object>
+  <object id="27" type="Item" gid="727" x="49.8365" y="198.429" width="9" height="11">
+   <properties>
+    <property name="kind" propertytype="ItemKind" value="LifePotion"/>
+   </properties>
+  </object>
+  <object id="30" type="Item" gid="727" x="266.274" y="181.696" width="9" height="11">
+   <properties>
+    <property name="kind" propertytype="ItemKind" value="LifePotion"/>
    </properties>
   </object>
  </objectgroup>
