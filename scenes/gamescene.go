@@ -58,7 +58,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	viewRect := g.cam.ViewRect()
 	screen.DrawImage(g.roomState.TiledMap.GroundImage(viewRect), nil)
 	g.drawShadow(screen, g.roomState.Player.Rect())
-	for _, attackItem := range g.roomState.Player.AttackItems {
+	for _, attackItem := range g.roomState.AttackItems {
 		g.drawShadow(screen, attackItem.HitRect())
 	}
 	for _, enemy := range g.roomState.Enemies {
@@ -100,7 +100,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	for _, attackItem := range g.roomState.Player.AttackItems {
+	for _, attackItem := range g.roomState.AttackItems {
 		addRenderer(attackItem.GetRenderer())
 	}
 
@@ -284,20 +284,20 @@ func (g *GameScene) Update() SceneId {
 
 	g.roomState.Player.CombatComponent.Update()
 
-	for _, attackItem := range g.roomState.Player.AttackItems {
+	for _, attackItem := range g.roomState.AttackItems {
 		attackItem.Update()
 	}
 
 	playerAttacks := inpututil.IsKeyJustPressed(ebiten.KeySpace) && g.roomState.Player.CombatComponent.Attack()
 	if playerAttacks {
 		g.roomState.Player.UpdateState()
-		g.roomState.Player.AttackItems = append(g.roomState.Player.AttackItems, g.roomState.Player.NewAttackItem())
+		g.roomState.AttackItems = append(g.roomState.AttackItems, g.roomState.Player.NewAttackItem())
 	}
 
 	deadEnemies := make(map[int]*entities.Enemy)
 	for idx, enemy := range g.roomState.Enemies {
 		enemy.CombatComponent.Update()
-		for _, attackItem := range g.roomState.Player.AttackItems {
+		for _, attackItem := range g.roomState.AttackItems {
 			if enemy.Rect().Overlaps(*attackItem.HitRect()) {
 				enemy.CombatComponent.Damage(attackItem.GetAmtDamage())
 				attackItem.DoDamage()
@@ -329,13 +329,13 @@ func (g *GameScene) Update() SceneId {
 		g.roomState.Enemies = g.roomState.Enemies[:n]
 	}
 	n := 0
-	for _, b := range g.roomState.Player.AttackItems {
+	for _, b := range g.roomState.AttackItems {
 		if remove := b.ShouldRemove(); !remove {
-			g.roomState.Player.AttackItems[n] = b
+			g.roomState.AttackItems[n] = b
 			n++
 		}
 	}
-	g.roomState.Player.AttackItems = g.roomState.Player.AttackItems[:n]
+	g.roomState.AttackItems = g.roomState.AttackItems[:n]
 
 	g.ingameUi.Update(g.roomState.Player.CombatComponent.Health())
 

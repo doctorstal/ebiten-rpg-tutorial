@@ -18,7 +18,7 @@ type RoomState struct {
 	Potions          []*entities.Potion
 	TiledMap         *tiled.TiledMap
 	Colliders        []*image.Rectangle
-}
+	AttackItems []entities.AttackItem}
 
 func (r *RoomState) positionPlayer(from string) {
 	if door, ok := r.TiledMap.Doors()[from]; ok {
@@ -70,6 +70,8 @@ func NewRoom(mapFile string, player *entities.Player, loader *resource.Loader) *
 		colliders = append(colliders, objectRect)
 	}
 	room.Colliders = colliders
+			room.AttackItems = make([]entities.AttackItem, 0)
+
 
 	return room
 

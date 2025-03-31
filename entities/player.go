@@ -11,7 +11,6 @@ import (
 
 type Player struct {
 	*Character
-	AttackItems []AttackItem
 	hero        state.Hero
 	loader      *resource.Loader
 }
@@ -46,7 +45,6 @@ func NewPlayer(loader *resource.Loader, hero state.Hero, x, y float64) *Player {
 	playerImg := loader.LoadImage(playerImgId).Data
 	return &Player{
 		Character:   NewCharacter(playerImg, x, y, components.NewPlayerCombat(5, 1, 30, 10)),
-		AttackItems: make([]AttackItem, 0),
 		hero:        hero,
 		loader:      loader,
 	}
