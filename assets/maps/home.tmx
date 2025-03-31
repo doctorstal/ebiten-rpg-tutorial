@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="12">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="14">
  <tileset firstgid="1" source="tilesets/InteriorFloor.tsx"/>
  <tileset firstgid="375" source="tilesets/Interior.tsx"/>
  <tileset firstgid="695" source="tilesets/buildings_x.tsx"/>
@@ -41,7 +41,9 @@
 375,375,423,423,423,423,423,375,440,411,394,445,375,423,423,423,423,375,375,423
 </data>
  </layer>
- <objectgroup id="4" name="colliders"/>
+ <objectgroup id="4" name="colliders">
+  <object id="13" gid="698" x="195.526" y="144.044" width="28" height="32"/>
+ </objectgroup>
  <objectgroup id="2" name="doors">
   <object id="3" type="door" x="141.867" y="0.727521" width="33.8297" height="12.0041">
    <properties>

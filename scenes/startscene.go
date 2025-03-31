@@ -1,8 +1,8 @@
 package scenes
 
 import (
-	"rpg-tutorial/resources"
-	"rpg-tutorial/state"
+	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
+	"github.com/doctorstal/ebiten-rpg-tutorial/state"
 
 	"github.com/ebitenui/ebitenui"
 	eimage "github.com/ebitenui/ebitenui/image"
@@ -52,26 +52,26 @@ func (s *StartScene) FirstLoad() {
 		),
 	)
 
-	samuraiContainer, samuraiBtn := newButtonWithImage(s.loader, resources.ImgSamuraiFace, func() {
+	samuraiContainer, _ := newButtonWithImage(s.loader, resources.ImgSamuraiFace, func() {
 		s.selectCharacter(state.HeroSamurai)
 	})
 
-	robotContainer, robotBtn := newButtonWithImage(s.loader, resources.ImgRobotFace, func() {
+	robotContainer, _ := newButtonWithImage(s.loader, resources.ImgRobotFace, func() {
 		s.selectCharacter(state.HeroRobot)
 	})
 
-	skeletonContainer, skeletonBtn := newButtonWithImage(s.loader, resources.ImgSkeletonFace, func() {
-		s.selectCharacter(state.HeroSkeleton)
+	boyContainer, _ := newButtonWithImage(s.loader, resources.ImgBoyFace, func() {
+		s.selectCharacter(state.HeroBoy)
 	})
 
-	samuraiBtn.AddFocus(widget.FOCUS_NEXT, robotBtn)
-	robotBtn.AddFocus(widget.FOCUS_NEXT, skeletonBtn)
-	skeletonBtn.AddFocus(widget.FOCUS_NEXT, samuraiBtn)
+	// samuraiBtn.AddFocus(widget.FOCUS_NEXT, robotBtn)
+	// robotBtn.AddFocus(widget.FOCUS_NEXT, boyBtn)
+	// boyBtn.AddFocus(widget.FOCUS_NEXT, samuraiBtn)
 	// skeletonBtn.Focus(true)
 
 	innerContainer.AddChild(samuraiContainer)
 	innerContainer.AddChild(robotContainer)
-	innerContainer.AddChild(skeletonContainer)
+	innerContainer.AddChild(boyContainer)
 
 	rootContainer.AddChild(innerContainer)
 

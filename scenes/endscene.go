@@ -1,7 +1,7 @@
 package scenes
 
 import (
-	"rpg-tutorial/resources"
+	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"

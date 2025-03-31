@@ -6,7 +6,7 @@ import (
 	"image"
 	"os"
 	"path"
-	"rpg-tutorial/constants"
+	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"

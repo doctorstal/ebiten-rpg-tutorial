@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"rpg-tutorial/resources"
+	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
 
 	resource "github.com/quasilyte/ebitengine-resource"
 )

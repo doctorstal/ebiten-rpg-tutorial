@@ -2,10 +2,10 @@ package entities
 
 import (
 	"image"
-	"rpg-tutorial/animations"
-	"rpg-tutorial/components"
-	"rpg-tutorial/constants"
-	"rpg-tutorial/spritesheet"
+	"github.com/doctorstal/ebiten-rpg-tutorial/animations"
+	"github.com/doctorstal/ebiten-rpg-tutorial/components"
+	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
+	"github.com/doctorstal/ebiten-rpg-tutorial/spritesheet"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )

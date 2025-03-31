@@ -3,10 +3,10 @@ package entities
 import (
 	"image"
 	"math"
-	"rpg-tutorial/animations"
-	"rpg-tutorial/constants"
-	"rpg-tutorial/resources"
-	"rpg-tutorial/spritesheet"
+	"github.com/doctorstal/ebiten-rpg-tutorial/animations"
+	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
+	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
+	"github.com/doctorstal/ebiten-rpg-tutorial/spritesheet"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	resource "github.com/quasilyte/ebitengine-resource"

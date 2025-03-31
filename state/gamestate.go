@@ -5,7 +5,7 @@ type Hero int
 const (
 	HeroSamurai Hero = iota
 	HeroRobot
-	HeroSkeleton
+	HeroBoy
 )
 
 type GlobalGameState struct {

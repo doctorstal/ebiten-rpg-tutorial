@@ -4,7 +4,7 @@ import (
 	"image"
 	"image/color"
 	"math"
-	"rpg-tutorial/state"
+	"github.com/doctorstal/ebiten-rpg-tutorial/state"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"

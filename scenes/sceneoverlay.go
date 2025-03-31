@@ -2,7 +2,7 @@ package scenes
 
 import (
 	"image/color"
-	"rpg-tutorial/constants"
+	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/colorm"

@@ -12,6 +12,8 @@ import (
 const (
 	ImgSkeleton resource.ImageID = iota
 	ImgSkeletonFace
+	ImgBoy
+	ImgBoyFace
 	ImgSamurai
 	ImgSamuraiFace
 	ImgRobot
@@ -55,6 +57,8 @@ func NewResourceLoader(fs embed.FS, audioContext *audio.Context) *resource.Loade
 	l.ImageRegistry.Assign(map[resource.ImageID]resource.ImageInfo{
 		ImgSkeleton:      {Path: "assets/images/skeleton.png"},
 		ImgSkeletonFace:  {Path: "assets/images/skeleton_faceset.png"},
+		ImgBoy:           {Path: "assets/images/boy.png"},
+		ImgBoyFace:       {Path: "assets/images/boy_faceset.png"},
 		ImgSamurai:       {Path: "assets/images/samurai.png"},
 		ImgSamuraiFace:   {Path: "assets/images/samurai_faceset.png"},
 		ImgRobot:         {Path: "assets/images/robot.png"},
@@ -66,7 +70,7 @@ func NewResourceLoader(fs embed.FS, audioContext *audio.Context) *resource.Loade
 		ImgRockExplosion: {Path: "assets/images/weapons/rock_element32x32.png"},
 		ImgShadow:        {Path: "assets/images/shadow.png"},
 		ImgPotion:        {Path: "assets/images/potion.png"},
-		ImgHeart:        {Path: "assets/images/ui/heart.png"},
+		ImgHeart:         {Path: "assets/images/ui/heart.png"},
 
 		UiBtnNormal:  {Path: "assets/images/ui/button_normal.png"},
 		UiBtnHover:   {Path: "assets/images/ui/button_hover.png"},

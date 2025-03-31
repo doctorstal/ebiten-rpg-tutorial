@@ -1,9 +1,9 @@
 package ui
 
 import (
-	"rpg-tutorial/resources"
-	"rpg-tutorial/spritesheet"
-	"rpg-tutorial/state"
+	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
+	"github.com/doctorstal/ebiten-rpg-tutorial/spritesheet"
+	"github.com/doctorstal/ebiten-rpg-tutorial/state"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	resource "github.com/quasilyte/ebitengine-resource"

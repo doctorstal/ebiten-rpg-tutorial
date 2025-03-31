@@ -4,8 +4,8 @@ import (
 	"image"
 	"log"
 	"path"
-	"rpg-tutorial/entities"
-	"rpg-tutorial/tiled"
+	"github.com/doctorstal/ebiten-rpg-tutorial/entities"
+	"github.com/doctorstal/ebiten-rpg-tutorial/tiled"
 
 	resource "github.com/quasilyte/ebitengine-resource"
 )
@@ -84,11 +84,13 @@ type WorldState struct {
 func (w *WorldState) LoadRoom(roomFile string, player *entities.Player) *RoomState {
 	if room, loaded := w.rooms[roomFile]; loaded {
 		room.positionPlayer(w.CurrentRoom)
+		w.CurrentRoom = roomFile
 		return room
 	}
 	room := NewRoom(roomFile, player, w.loader)
 	room.positionPlayer(w.CurrentRoom)
 	w.CurrentRoom = roomFile
+	w.rooms[roomFile] = room
 	return room
 }
 

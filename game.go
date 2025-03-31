@@ -1,9 +1,9 @@
 package main
 
 import (
-	"rpg-tutorial/constants"
-	"rpg-tutorial/scenes"
-	"rpg-tutorial/state"
+	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
+	"github.com/doctorstal/ebiten-rpg-tutorial/scenes"
+	"github.com/doctorstal/ebiten-rpg-tutorial/state"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"

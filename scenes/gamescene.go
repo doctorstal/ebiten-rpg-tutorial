@@ -5,13 +5,13 @@ import (
 	"image"
 	"image/color"
 	"math/rand"
-	"rpg-tutorial/camera"
-	"rpg-tutorial/components/ui"
-	"rpg-tutorial/constants"
-	"rpg-tutorial/entities"
-	"rpg-tutorial/resources"
-	"rpg-tutorial/state"
-	"rpg-tutorial/world"
+	"github.com/doctorstal/ebiten-rpg-tutorial/camera"
+	"github.com/doctorstal/ebiten-rpg-tutorial/components/ui"
+	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
+	"github.com/doctorstal/ebiten-rpg-tutorial/entities"
+	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
+	"github.com/doctorstal/ebiten-rpg-tutorial/state"
+	"github.com/doctorstal/ebiten-rpg-tutorial/world"
 	"slices"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -291,7 +291,7 @@ func (g *GameScene) Update() SceneId {
 	playerAttacks := inpututil.IsKeyJustPressed(ebiten.KeySpace) && g.roomState.Player.CombatComponent.Attack()
 	if playerAttacks {
 		g.roomState.Player.UpdateState()
-		g.roomState.Player.AttackItems = append(g.roomState.Player.AttackItems, g.roomState.Player.NewBomb())
+		g.roomState.Player.AttackItems = append(g.roomState.Player.AttackItems, g.roomState.Player.NewAttackItem())
 	}
 
 	deadEnemies := make(map[int]*entities.Enemy)
@@ -345,10 +345,10 @@ func (g *GameScene) Update() SceneId {
 		g.Unload()
 		return LostSceneId
 	}
-	if len(g.roomState.Enemies) == 0 {
-		g.Unload()
-		return WonSceneId
-	}
+	// if len(g.roomState.Enemies) == 0 {
+	// 	g.Unload()
+	// 	return WonSceneId
+	// }
 
 	return GameSceneId
 }
