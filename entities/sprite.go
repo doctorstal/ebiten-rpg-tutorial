@@ -27,7 +27,7 @@ const (
 
 type Animator interface {
 	UpdateAnimation() bool
-	GetRenderer() Renderer
+	GetRenderers() []Renderer
 }
 
 type Renderer interface {
@@ -70,7 +70,7 @@ type Sprite struct {
 	state               SpriteState
 }
 
-func (s *Sprite) GetRenderer() Renderer {
+func (s *Sprite) GetRenderers() []Renderer {
 	frame := 0
 	activeAnim := s.ActiveAnimation()
 	if activeAnim != nil {
@@ -84,13 +84,13 @@ func (s *Sprite) GetRenderer() Renderer {
 	}
 	rect := image.Rect(int(s.X), int(s.Y), int(s.X+s.Width), int(s.Y+s.Height))
 
-	return &BasicRenderer{
+	return []Renderer{&BasicRenderer{
 		img: s.Img.SubImage(
 			frameRect,
 		).(*ebiten.Image),
 		drawOpts: s.DrawOpts(),
 		rect:     &rect,
-	}
+	}}
 }
 
 func (s *Sprite) DrawOpts() *ebiten.DrawImageOptions {

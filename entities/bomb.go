@@ -4,6 +4,7 @@ import (
 	"image"
 	"math"
 	"math/rand"
+
 	"github.com/doctorstal/ebiten-rpg-tutorial/animations"
 	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
 	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
@@ -22,8 +23,8 @@ type DeadBombAnimator struct {
 	deadFrame   int
 }
 
-// GetRenderer implements Animator.
-func (b *DeadBombAnimator) GetRenderer() Renderer {
+// GetRenderers implements Animator.
+func (b *DeadBombAnimator) GetRenderers() []Renderer {
 	frame := b.animation.Frame()
 	z := 0
 	if frame >= 15 {
@@ -32,14 +33,14 @@ func (b *DeadBombAnimator) GetRenderer() Renderer {
 	}
 	frameRect := b.spritesheet.Rect(frame)
 
-	return &BasicRenderer{
+	return []Renderer{&BasicRenderer{
 		img: b.img.SubImage(
 			frameRect,
 		).(*ebiten.Image),
 		drawOpts: b.drawOpts,
 		rect:     b.rect,
 		z:        z,
-	}
+	}}
 }
 
 // UpdateAnimation implements Animator.
@@ -64,7 +65,7 @@ func (b *Bomb) DoDamage() {
 	b.state = Dead
 	b.drawOpts = &ebiten.DrawImageOptions{}
 	b.drawOpts.GeoM.Translate(-16, -16)
-	b.drawOpts.GeoM.Rotate( 2 * math.Pi/float64(1+rand.Intn(4)))
+	b.drawOpts.GeoM.Rotate(2 * math.Pi / float64(1+rand.Intn(4)))
 	b.drawOpts.GeoM.Translate(16, 16)
 	sound := b.loader.LoadAudio(resources.SoundExplosion).Player
 	sound.Rewind()

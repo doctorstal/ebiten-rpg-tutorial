@@ -3,7 +3,7 @@ package entities
 import "image"
 
 type AttackItem interface {
-	GetRenderer() Renderer
+	GetRenderers() []Renderer
 	GetAnimator() Animator
 	Update()
 	HitRect() *image.Rectangle

@@ -2,6 +2,7 @@ package components
 
 type Combat interface {
 	Health() int
+	MaxHealth() int
 	AttackPower() uint
 	Attacking() bool
 	Attack() bool
@@ -13,6 +14,7 @@ type Combat interface {
 
 type BasicCombat struct {
 	health      int
+	maxHealth   int
 	attackPower uint
 	attacking   bool
 	damaged     bool
@@ -54,9 +56,15 @@ func (b *BasicCombat) Heal(amount uint) {
 func (b *BasicCombat) Health() int {
 	return b.health
 }
+
+func (b *BasicCombat) MaxHealth() int {
+	return b.maxHealth
+}
+
 func NewBasicCombat(health int, attackPower uint) Combat {
 	return &BasicCombat{
 		health:      health,
+		maxHealth:   health,
 		attackPower: attackPower,
 		attacking:   false,
 	}

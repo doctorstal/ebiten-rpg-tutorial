@@ -1,10 +1,11 @@
 package scenes
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"math/rand"
+	"slices"
+
 	"github.com/doctorstal/ebiten-rpg-tutorial/camera"
 	"github.com/doctorstal/ebiten-rpg-tutorial/components/ui"
 	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
@@ -12,11 +13,9 @@ import (
 	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
 	"github.com/doctorstal/ebiten-rpg-tutorial/state"
 	"github.com/doctorstal/ebiten-rpg-tutorial/world"
-	"slices"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/colorm"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	resource "github.com/quasilyte/ebitengine-resource"
@@ -72,9 +71,11 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.roomState.TiledMap.ObjectsImage(viewRect), nil)
 
 	renderers := make([]entities.Renderer, 0)
-	addRenderer := func(r entities.Renderer) {
-		if viewRect.Overlaps(*r.Rect()) {
-			renderers = append(renderers, r)
+	addRenderers := func(rs []entities.Renderer) {
+		for _, r := range rs {
+			if viewRect.Overlaps(*r.Rect()) {
+				renderers = append(renderers, r)
+			}
 		}
 	}
 
@@ -90,27 +91,26 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	// }
 
 	for _, animator := range g.roomState.StaticAnimators {
-		addRenderer(animator.GetRenderer())
+		addRenderers(animator.GetRenderers())
 	}
 
 	for _, potion := range g.roomState.Potions {
 		if !potion.Consumed {
-			addRenderer(potion.GetRenderer())
-
+			addRenderers(potion.GetRenderers())
 		}
 	}
 
 	for _, attackItem := range g.roomState.AttackItems {
-		addRenderer(attackItem.GetRenderer())
+		addRenderers(attackItem.GetRenderers())
 	}
 
 	for _, enemy := range g.roomState.Enemies {
-		addRenderer(enemy.GetRenderer())
+		addRenderers(enemy.GetRenderers())
 	}
 
 	// draw player
 
-	addRenderer(g.roomState.Player.GetRenderer())
+	addRenderers(g.roomState.Player.GetRenderers())
 
 	slices.SortFunc(renderers, func(r1, r2 entities.Renderer) int {
 		if r1.Z() == r2.Z() {
@@ -129,7 +129,6 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		)
 	}
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player Health: %d, Enemies Left: %d \n", g.roomState.Player.CombatComponent.Health(), len(g.roomState.Enemies)))
 	g.ingameUi.Draw(screen)
 	if g.gameState.DebugMode {
 		for _, d := range g.roomState.TiledMap.Doors() {
@@ -149,7 +148,6 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 }
 
 func (g *GameScene) FirstLoad() {
-
 	shadowImg := g.loader.LoadImage(resources.ImgShadow).Data
 	g.shadowImg = ebiten.NewImage(shadowImg.Bounds().Dx(), shadowImg.Bounds().Dy())
 	var cm colorm.ColorM
@@ -172,19 +170,19 @@ func (g *GameScene) FirstLoad() {
 	)
 
 	g.isLoaded = true
-
 }
 
 func (g *GameScene) Unload() {
 	// TODO do proper unload
-	g.roomState.StaticAnimators = g.roomState.StaticAnimators[:0]
 	g.isLoaded = false
 }
 
 func (g *GameScene) OnEnter() {
+	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 }
 
 func (g *GameScene) OnExit() {
+	ebiten.SetCursorMode(ebiten.CursorModeVisible)
 }
 
 func (g *GameScene) Update() SceneId {

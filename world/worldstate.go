@@ -22,8 +22,8 @@ type RoomState struct {
 	AttackItems      []entities.AttackItem
 }
 
-func (r *RoomState) positionPlayer(from string) {
-	if door, ok := r.TiledMap.Doors()[from]; ok {
+func (r *RoomState) positionPlayerAtTheDoor(doorName string) {
+	if door, ok := r.TiledMap.Doors()[doorName]; ok {
 		r.Player.X = float64(door.Rect.Min.X)
 		if door.Direction == "up" {
 			r.Player.Y = float64(door.Rect.Min.Y) - r.Player.Height
@@ -79,12 +79,12 @@ type WorldState struct {
 
 func (w *WorldState) LoadRoom(roomFile string, player *entities.Player) *RoomState {
 	if room, loaded := w.rooms[roomFile]; loaded {
-		room.positionPlayer(w.CurrentRoom)
+		room.positionPlayerAtTheDoor(w.CurrentRoom)
 		w.CurrentRoom = roomFile
 		return room
 	}
 	room := NewRoom(roomFile, player, w.loader)
-	room.positionPlayer(w.CurrentRoom)
+	room.positionPlayerAtTheDoor(w.CurrentRoom)
 	w.CurrentRoom = roomFile
 	w.rooms[roomFile] = room
 	return room

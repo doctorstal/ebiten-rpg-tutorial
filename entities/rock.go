@@ -4,6 +4,7 @@ import (
 	"image"
 	"math"
 	"math/rand"
+
 	"github.com/doctorstal/ebiten-rpg-tutorial/animations"
 	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
 	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
@@ -23,7 +24,7 @@ type DeadRockAnimator struct {
 }
 
 // GetRenderer implements Animator.
-func (b *DeadRockAnimator) GetRenderer() Renderer {
+func (b *DeadRockAnimator) GetRenderers() Renderer {
 	frame := b.animation.Frame()
 	z := 0
 	if frame >= 15 {
@@ -90,8 +91,9 @@ func (b *Rock) GetAnimator() Animator {
 		return b.Sprite
 	}
 }
-func (b *Rock) GetRenderer() Renderer {
-	return b.Sprite.GetRenderer()
+
+func (b *Rock) GetRenderers() []Renderer {
+	return b.Sprite.GetRenderers()
 }
 
 // ShouldRemove implements AttackItem.

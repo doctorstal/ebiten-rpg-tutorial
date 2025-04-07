@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "first.tmx",
+    "activeFile": "home.tmx",
     "expandedProjectPaths": [
         ".",
         "tilesets"
@@ -71,8 +71,8 @@
             "scale": 2.7490624999999995,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 161.87336592020011,
-                "y": 134.4094577696942
+                "x": 69.478231215187,
+                "y": 31.465272251904068
             }
         },
         "homej.tmj": {
@@ -136,10 +136,14 @@
             "scaleInEditor": 3.34
         },
         "tilesets/items.tsx": {
-            "dynamicWrapping": true
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "tilesets/skeleton.tsx": {
-            "dynamicWrapping": false
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         }
     },
     "last.imagePath": "/Users/oleksiistadnyk/edu/rpg-tutorial/assets/images",
@@ -152,23 +156,26 @@
         "first.tmx",
         "tilesets/TilesetFloor.tsx",
         "tilesets/buildings_x.tsx",
-        "second.tmx"
+        "second.tmx",
+        "tilesets/skeleton.tsx",
+        "tilesets/items.tsx",
+        "home.tmx"
     ],
     "project": "rpg-tutorial.tiled-project",
     "property.type": "ItemType",
     "recentFiles": [
+        "first.tmx",
+        "tilesets/TilesetFloor.tsx",
+        "tilesets/buildings_x.tsx",
+        "second.tmx",
+        "tilesets/skeleton.tsx",
+        "tilesets/items.tsx",
+        "home.tmx",
         "homej.tmj",
         "tilesets/Interior.tsx",
         "tilesets/InteriorFloor.tsx",
-        "second.tmx",
-        "tilesets/buildings_x.tsx",
-        "tilesets/TilesetFloor.tsx",
-        "first.tmx",
         "first.tmj",
-        "/Users/oleksiistadnyk/edu/go-tiled-rotation/transform-test.tmx",
-        "/Users/oleksiistadnyk/edu/go-tiled-rotation/second.tmx",
-        "/Users/oleksiistadnyk/Downloads/rotationtest.tmx",
-        "tilesets/buildings.tsj"
+        "/Users/oleksiistadnyk/edu/go-tiled-rotation/transform-test.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

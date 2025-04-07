@@ -3,6 +3,7 @@ package entities
 import (
 	"image"
 	"math"
+
 	"github.com/doctorstal/ebiten-rpg-tutorial/animations"
 	"github.com/doctorstal/ebiten-rpg-tutorial/constants"
 	"github.com/doctorstal/ebiten-rpg-tutorial/resources"
@@ -37,8 +38,9 @@ func (e *EnergyBall) GetAmtDamage() uint {
 func (e *EnergyBall) GetAnimator() Animator {
 	return e.Sprite
 }
-func (e *EnergyBall) GetRenderer() Renderer {
-	return e.Sprite.GetRenderer()
+
+func (e *EnergyBall) GetRenderers() []Renderer {
+	return e.Sprite.GetRenderers()
 }
 
 // ShouldRemove implements AttackItem.

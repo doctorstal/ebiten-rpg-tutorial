@@ -26,6 +26,8 @@ const (
 	ImgShadow
 	ImgPotion
 	ImgHeart
+	ImgLifeBar
+	ImgLifeBarUnder
 
 	UiBtnNormal
 	UiBtnHover
@@ -71,6 +73,8 @@ func NewResourceLoader(fs embed.FS, audioContext *audio.Context) *resource.Loade
 		ImgShadow:        {Path: "assets/images/shadow.png"},
 		ImgPotion:        {Path: "assets/images/potion.png"},
 		ImgHeart:         {Path: "assets/images/ui/heart.png"},
+		ImgLifeBar:       {Path: "assets/images/ui/healthbar.png"},
+		ImgLifeBarUnder:  {Path: "assets/images/ui/healthbar_under.png"},
 
 		UiBtnNormal:  {Path: "assets/images/ui/button_normal.png"},
 		UiBtnHover:   {Path: "assets/images/ui/button_hover.png"},
